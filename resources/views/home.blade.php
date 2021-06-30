@@ -60,7 +60,7 @@
                                     <div class="card">
                                         <div class="card-body history-card">
                                             <div id="titleContainer">
-                                                <h4 id="historyTitle" class="d-inline">История проследнего процесса</h4>
+                                                <h4 id="historyTitle" class="d-inline">История последнего процесса</h4>
 
                                             </div>
                                             <hr>
