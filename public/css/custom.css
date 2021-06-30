@@ -1,0 +1,9 @@
+.custom-file-label::after{
+    content: 'Выбрать' !important;
+}
+.history-card p{
+    margin-bottom: 4px;
+}
+.form-control.is-invalid, .was-validated .form-control:invalid{
+    background-image: none;
+}
