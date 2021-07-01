@@ -44,7 +44,7 @@ class EntityDataImport implements ToCollection,WithHeadingRow
         //Отправка в очередь
         foreach ($entityData as $index=>$line){
             $lineNum = (int) $index+1; //номер строки
-            ProcessUpdateEntityJob::dispatch($lineNum,request()->entity_id, $line);
+            ProcessUpdateEntityJob::dispatch($lineNum,request()->entity_id, $line)->delay(now()->addMicroseconds(500000));
         }
     }
 
