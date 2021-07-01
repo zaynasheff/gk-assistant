@@ -5,6 +5,7 @@ namespace App\Imports;
 use App\Jobs\ProcessUpdateEntityJob;
 use App\Models\ProcessHistory;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Str;
 use Maatwebsite\Excel\Concerns\Importable;
 use Maatwebsite\Excel\Concerns\ToCollection;
@@ -36,6 +37,9 @@ class EntityDataImport implements ToCollection,WithHeadingRow
 
 
         $entityData =  $collection->toArray();
+
+        //чистим лог
+        Artisan::call('log:clear');
 
         //Отправка в очередь
         foreach ($entityData as $index=>$line){
