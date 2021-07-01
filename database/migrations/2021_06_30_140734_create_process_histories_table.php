@@ -17,11 +17,11 @@ class CreateProcessHistoriesTable extends Migration
             $table->id();
             $table->string('uid');
             $table->dateTime('process_start');
-            $table->dateTime('process_end');
+            $table->dateTime('process_end')->nullable();
             $table->integer('entity_id');
             $table->integer('lines_count');
-            $table->integer('lines_success');
-            $table->integer('lines_error');
+            $table->integer('lines_success')->default(0);
+            $table->integer('lines_error')->default(0);
             $table->timestamps();
         });
     }
