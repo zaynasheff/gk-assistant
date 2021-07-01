@@ -26,6 +26,6 @@
 @include('layouts.footer')
 @include('layouts.scripts')
 
-@include('layouts.process_script')
+{{--@include('layouts.process_script')--}}
 </body>
 </html>

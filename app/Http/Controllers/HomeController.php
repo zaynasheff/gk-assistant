@@ -2,11 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Imports\EntityDataHeadingsImport;
+use App\Imports\EntityDataImport;
+use App\Models\B24FieldsDictionary;
 use App\Models\ProcessHistory;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Str;
+use Maatwebsite\Excel\Facades\Excel;
+use Maatwebsite\Excel\HeadingRowImport;
+use Maatwebsite\Excel\Imports\HeadingRowFormatter;
+
+HeadingRowFormatter::default('none');
 
 class HomeController extends Controller
 {
@@ -27,60 +32,88 @@ class HomeController extends Controller
      */
     public function index()
     {
-        $lastProcess = ProcessHistory::orderBy('process_end','desc')->first();
+        $is_running = ProcessHistory::isRunning();
+        $lastProcess = ProcessHistory::orderBy('process_start','desc')->first();
 
-        return view('home',compact('lastProcess'));
+        return view('home',compact('lastProcess','is_running'));
     }
 
     public function processHandler(Request $request){
+
         $rules = [
             'entity_id'=>'required',
-            'file'=>'required|mimes:csv,txt',
+            //'file'=>'required|mimes:csv,txt',
+            'file'=>'required',
         ];
+        $request->validate($rules);
 
-        $validator = Validator::make($request->all(), $rules);
 
-        if ($validator->fails()){
-            return response()->json(['errors'=>$validator->errors()]);
+
+        //заголовки
+
+        $headings = (new HeadingRowImport)->toArray($request->file('file'))[0][0];
+
+        //Изначальная валидация
+
+        //отсутствие ячейки со значением “ID”
+
+        $errors = false;
+
+        if(!in_array('ID',$headings)){
+            $errors = true;
+            $message = 'Процесс не запущен! Отсутствие ячейки со значением ID';
+
+        }
+        //совпадение значений любых двух ячеек
+        if (count($headings) !== count(array_unique($headings))){
+
+            $errors = true;
+            $message = 'Процесс не запущен! Совпадение значений двух названий столбоцов';
+
+        }
+
+         //отсутствие в выбранной сущности Битрикс полей с названием, равным значению ячейки
+        $b24fields = B24FieldsDictionary::where('entity_id',$request->entity_id)->pluck('title')->toArray();
+
+        $diffFields =  array_diff($headings, $b24fields);
+
+        if(count($diffFields)>0){
+            $errors = true;
+            $message = 'Процесс не запущен! Отсутствие в выбранной сущности Битрикс полей: ' .implode(', ',$diffFields);
+        }
+
+        //пустое значение ячейки, если хотя бы в одной ячейке в любой строке данного столбца есть непустое значение
+        if(in_array(null, $headings)){
+            $errors = true;
+            $message = 'Процесс не запущен! Пустое значение в заголовке';
+
+        }
+
+       //наличие в сущности битрикс более одного поля с с названием, равным значению ячейки
+        if (count($b24fields) !== count(array_unique($b24fields))){
+
+            $errors = true;
+            $message = 'Процесс не запущен! Наличие в сущности битрикс более одного поля с одним названием';
         }
 
 
-        //Обработка файла
+        /////временно отключаем валидацию
+        $errors = false;
 
-        //запись в таблицу ProcessHistory
+        if ($errors === true){
+            return redirect()->back()->with('error',$message);
+        }
 
-        $lines_count = rand(1000,1500); //demo
-        $lines_error = 2;//demo
-        $lines_success = (int)($lines_count*0.99);//demo
+        ///////////////Импорт файла///////////
 
-        $process = ProcessHistory::create([
-            'uid'=>Str::random(15),
-            'process_start'=>now()->toDateTimeString(),
-            'process_end'=>now()->addMinutes(25)->toDateTimeString(), //demo
-            'entity_id'=>$request->entity_id,
-            'lines_count'=>$lines_count, //demo
-            'lines_success'=>$lines_success, //demo
-            'lines_error'=>$lines_error, //demo
-        ]);
+        Excel::import(new EntityDataImport, $request->file('file'));
 
-        $process_data = [
-            'uid'=>$process->uid,
-            'process_start'=>Carbon::parse($process->process_start)->format('d.m.Y H:i:s'),
-            'process_end'=>Carbon::parse($process->process_end)->format('d.m.Y H:i:s'), //demo
-            'entity_title'=>$process->entity->title,
-            'lines_count'=>$process->lines_count, //demo
-            'lines_success'=>(int)($lines_count*0.2), //demo
-            'lines_error'=>$process->lines_error, //demo
-        ];
 
-        return response()->json(['success'=>['message'=>'Процесс обработки запущен','process_data'=>$process_data]]);
+
+        return redirect()->back()->with('success','Процесс обработки запущен');
 
     }
 
-    public function processTerminate(Request $request){
-        $process = ProcessHistory::where('uid',$request->uid)->first();
-        $process->lines_success = $request->lines_success;
-        $process->save();
-        return response()->json(['success'=>'Процесс успешно остановлен']);
-    }
+
+
 }
