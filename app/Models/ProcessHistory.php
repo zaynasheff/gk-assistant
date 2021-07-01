@@ -23,4 +23,11 @@ class ProcessHistory extends Model
     public function entity(){
         return $this->hasOne(Entity::class,'id','entity_id');
     }
+
+    public static function isRunning(){
+        if(self::where('processing',1)->first()){
+            return true;
+        }
+        return false;
+    }
 }
