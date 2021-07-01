@@ -8,4 +8,5 @@ use Illuminate\Database\Eloquent\Model;
 class B24FieldsDictionary extends Model
 {
     use HasFactory;
+    protected $guarded = [];
 }
