@@ -30,4 +30,3 @@ Route::post('/register',function (){
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 Route::post('/process_handler', [App\Http\Controllers\HomeController::class, 'processHandler'])->name('processHandler');
-Route::post('/terminate_process', [App\Http\Controllers\HomeController::class, 'processTerminate'])->name('processTerminate');

@@ -26,6 +26,8 @@
                                       </div>
                                   </div>
                               @endif
+
+
                              <form action="{{route('processHandler')}}" method="POST" enctype="multipart/form-data">
                                 @csrf
                                 <div class="row">
@@ -99,7 +101,16 @@
                                         </div>
                                     </div>
                                 </div>
-                            @endif
+                            @else
+                                @if(session('success'))
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <div class="alert alert-success mb-5">
+                                                {{session('success')}}
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endif
                                 <div class="row mt-5">
                                     <div class="col-12">
                                         <div class="card">
@@ -113,24 +124,26 @@
                                                         обновить
                                                     </button>
                                                     <button
-                                                         onclick="alert('прервать процесс')"
+                                                        onclick="alert('прервать процесс')"
                                                         id="terminateProcessBtn" class="btn btn-sm btn-danger d-inline">
                                                         <i class="fa fa-minus-circle mr-2"></i>
                                                         прервать процесс
                                                     </button>
                                                 </div>
                                                 <hr>
-                                                <p>Время запуска: <span id="process_start"> </span></p>
-                                                <p>Время завершения: <span id="process_end"> </span></p>
-                                                <p>Тип сущности: <span id="entity_title"> </span></p>
-                                                <p>Строк в файле: <span id="lines_count"> </span></p>
-                                                <p>Успешно обработано: <span id="lines_success"> </span></p>
-                                                <p>Некритичных ошибок: <span id="lines_error"> </span></p>
+                                                <p>Время запуска: <span id="process_start"> {{$lastProcess->process_start}}</span></p>
+                                                <p>Время завершения: <span id="process_end"> {{$lastProcess->process_end}}</span></p>
+                                                <p>Тип сущности: <span id="entity_title"> {{$lastProcess->entity->title}}</span></p>
+                                                <p>Строк в файле: <span id="lines_count"> {{$lastProcess->lines_count}}</span></p>
+                                                <p>Успешно обработано: <span id="lines_success"> {{$lastProcess->lines_success}}</span></p>
+                                                <p>Некритичных ошибок: <span id="lines_error"> {{$lastProcess->lines_error}}</span></p>
                                                 <p>Ссылка на лог ошибок: <a href="https://yandex.ru" target="_blank">error_log_link_here</a></p>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
+                            @endif
+
 
                         </div>
                     </div>

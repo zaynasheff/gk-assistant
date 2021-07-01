@@ -17,6 +17,9 @@ class ProcessHistory extends Model
     }
 
     public function getProcessEndAttribute($value){
+        if ($value === null){
+            return 'расчет времени завершения...';
+        }
         return Carbon::parse($value)->format('d.m.Y H:i:s');
     }
 
