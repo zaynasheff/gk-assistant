@@ -7,6 +7,8 @@ use App\Imports\EntityDataImport;
 use App\Models\B24FieldsDictionary;
 use App\Models\ProcessHistory;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
 use Maatwebsite\Excel\HeadingRowImport;
@@ -117,7 +119,28 @@ class HomeController extends Controller
     }
 
     public function getLog(){
+
         return Storage::disk('log')->download('update.log');
+
+    }
+
+    public function processTerminate(){
+       try{
+           //чистим очередь
+           Artisan::call('queue:clear --queue=EntityDataImport');
+           $process = ProcessHistory::where('processing',1)->first();
+           $process->processing = 2;//процесс завершен
+           $process->save();
+           Log::channel('log')->info('Процесс UID: '.$process->uid .' был прерван  '.now()->format('d.m.Y h:i:s'));
+
+           return redirect()->back()->with('success', 'Процесс был прерван успешно');
+       }
+       catch (\Exception $e){
+           Log::channel('log')->error('Ошибка прерывания процесса UID: '. $e->getMessage());
+
+           return redirect()->back()->with('error',$e->getMessage());
+       }
+
 
     }
 

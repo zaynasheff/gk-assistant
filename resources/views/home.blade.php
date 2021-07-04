@@ -17,6 +17,15 @@
                     <div class="card">
                         <div class="card-body">
                             @if(!$is_running)
+                                @if(session('success'))
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <div class="alert alert-success mb-5">
+                                                {{session('success')}}
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endif
                               @if(session('error'))
                                   <div class="row">
                                       <div class="col-12">
@@ -123,12 +132,16 @@
                                                         <i class="fa fa-sync mr-2"></i>
                                                         обновить
                                                     </button>
+                                                    <form action="{{route('processTerminate')}}" method="POST" class="d-inline">
+                                                        @csrf
                                                     <button
-                                                        onclick="alert('прервать процесс')"
+                                                        type="submit"
+                                                        onclick="confirm('Вы уверены, что хотите прервать процесс?')"
                                                         id="terminateProcessBtn" class="btn btn-sm btn-danger d-inline">
                                                         <i class="fa fa-minus-circle mr-2"></i>
                                                         прервать процесс
                                                     </button>
+                                                    </form>
                                                 </div>
                                                 <hr>
                                                 <p>Время запуска: <span id="process_start"> {{$lastProcess->process_start}}</span></p>
