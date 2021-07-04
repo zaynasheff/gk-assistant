@@ -53,6 +53,7 @@ class UpdateDicts extends Command
 
         try {
 
+           // dd($this->b24->getCompany(1015));
            // dd($this->b24->getDealFields());
 
             collect($this->b24->getDealFields())->each(function ($item, $key) {
@@ -86,14 +87,17 @@ class UpdateDicts extends Command
 
     private function updateDict($field_code, $entity_id, $dictItem)
     {
-
+//UF_CRM_    listLabel
         B24FieldsDictionary::updateOrCreate(
             ['field_code' => $field_code, 'entity_id' => $entity_id],
             [
                 'field_type' => $dictItem['type'],
                 'required' => $dictItem['isRequired'],
-                'title' => $dictItem['title'],
-                'forbidden_to_edit' => $dictItem['isReadOnly']
+                'title' => strpos( $field_code, "UF_CRM_") === 0
+                    ? $dictItem["listLabel"]
+                    : $dictItem['title'],
+                'items' => json_encode($dictItem)
+                //'forbidden_to_edit' => $dictItem['isReadOnly']
             ]);
     }
 }

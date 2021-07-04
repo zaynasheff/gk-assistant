@@ -4,6 +4,7 @@ namespace App\Imports;
 
 use App\Jobs\ProcessUpdateEntityJob;
 use App\Models\ProcessHistory;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Log;
@@ -29,7 +30,7 @@ class EntityDataImport implements ToCollection,WithHeadingRow
         $process =  ProcessHistory::create([
             'uid'=>Str::random(15),
             'process_start'=>now()->toDateTimeString(),
-            'process_end'=>null,
+            'process_end'=> now()->addSeconds(count($collection)*2)->toDateTimeString(),
             'entity_id'=>request()->entity_id,
             'lines_count'=>count($collection),
             'lines_success'=>0,
