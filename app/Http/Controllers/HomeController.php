@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Imports\EntityDataHeadingsImport;
+
 use App\Imports\EntityDataImport;
 use App\Models\B24FieldsDictionary;
 use App\Models\ProcessHistory;
@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
 use Maatwebsite\Excel\HeadingRowImport;
 use Maatwebsite\Excel\Imports\HeadingRowFormatter;
-use ZipStream\File;
+
 
 HeadingRowFormatter::default('none');
 
@@ -37,20 +37,20 @@ class HomeController extends Controller
     public function index()
     {
         $is_running = ProcessHistory::isRunning();
-        $lastProcess = ProcessHistory::orderBy('process_start','desc')->first();
+        $lastProcess = ProcessHistory::orderBy('process_start', 'desc')->first();
 
-        return view('home',compact('lastProcess','is_running'));
+        return view('home', compact('lastProcess', 'is_running'));
     }
 
-    public function processHandler(Request $request){
+    public function processHandler(Request $request)
+    {
 
         $rules = [
-            'entity_id'=>'required',
+            'entity_id' => 'required',
             //'file'=>'required|mimes:csv,txt',
-            'file'=>'required',
+            'file' => 'required',
         ];
         $request->validate($rules);
-
 
 
         //заголовки
@@ -63,38 +63,38 @@ class HomeController extends Controller
 
         $errors = false;
 
-        if(!in_array('ID',$headings)){
+        if (!in_array('ID', $headings)) {
             $errors = true;
             $message = 'Процесс не запущен! Отсутствие ячейки со значением ID';
 
         }
         //совпадение значений любых двух ячеек
-        if (count($headings) !== count(array_unique($headings))){
+        if (count($headings) !== count(array_unique($headings))) {
 
             $errors = true;
             $message = 'Процесс не запущен! Совпадение значений двух названий столбоцов';
 
         }
 
-         //отсутствие в выбранной сущности Битрикс полей с названием, равным значению ячейки
-        $b24fields = B24FieldsDictionary::where('entity_id',$request->entity_id)->pluck('title')->toArray();
+        //отсутствие в выбранной сущности Битрикс полей с названием, равным значению ячейки
+        $b24fields = B24FieldsDictionary::where('entity_id', $request->entity_id)->pluck('title')->toArray();
 
-        $diffFields =  array_diff($headings, $b24fields);
+        $diffFields = array_diff($headings, $b24fields);
 
-        if(count($diffFields)>0){
+        if (count($diffFields) > 0) {
             $errors = true;
-            $message = 'Процесс не запущен! Отсутствие в выбранной сущности Битрикс полей: ' .implode(', ',$diffFields);
+            $message = 'Процесс не запущен! Отсутствие в выбранной сущности Битрикс полей: ' . implode(', ', $diffFields);
         }
 
         //пустое значение ячейки, если хотя бы в одной ячейке в любой строке данного столбца есть непустое значение
-        if(in_array(null, $headings)){
+        if (in_array(null, $headings)) {
             $errors = true;
             $message = 'Процесс не запущен! Пустое значение в заголовке';
 
         }
 
-       //наличие в сущности битрикс более одного поля с с названием, равным значению ячейки
-        if (count($b24fields) !== count(array_unique($b24fields))){
+        //наличие в сущности битрикс более одного поля с с названием, равным значению ячейки
+        if (count($b24fields) !== count(array_unique($b24fields))) {
 
             $errors = true;
             $message = 'Процесс не запущен! Наличие в сущности битрикс более одного поля с одним названием';
@@ -104,8 +104,8 @@ class HomeController extends Controller
         /////временно отключаем валидацию
         $errors = false;
 
-        if ($errors === true){
-            return redirect()->back()->with('error',$message);
+        if ($errors === true) {
+            return redirect()->back()->with('error', $message);
         }
 
         ///////////////Импорт файла///////////
@@ -113,33 +113,33 @@ class HomeController extends Controller
         Excel::import(new EntityDataImport, $request->file('file'));
 
 
-
-        return redirect()->back()->with('success','Процесс обработки запущен');
+        return redirect()->back()->with('success', 'Процесс обработки запущен');
 
     }
 
-    public function getLog(){
+    public function getLog()
+    {
 
         return Storage::disk('log')->download('update.log');
 
     }
 
-    public function processTerminate(){
-       try{
-           //чистим очередь
-           Artisan::call('queue:clear --queue=EntityDataImport');
-           $process = ProcessHistory::where('processing',1)->first();
-           $process->processing = 2;//процесс завершен
-           $process->save();
-           Log::channel('log')->info('Процесс UID: '.$process->uid .' был прерван  '.now()->format('d.m.Y h:i:s'));
+    public function processTerminate()
+    {
+        try {
+            //чистим очередь
+            Artisan::call('queue:clear --queue=EntityDataImport');
+            $process = ProcessHistory::where('processing', 1)->first();
+            $process->processing = 2;//процесс завершен
+            $process->save();
+            Log::channel('log')->info('Процесс UID: ' . $process->uid . ' был прерван  ' . now()->format('d.m.Y h:i:s'));
 
-           return redirect()->back()->with('success', 'Процесс был прерван успешно');
-       }
-       catch (\Exception $e){
-           Log::channel('log')->error('Ошибка прерывания процесса UID: '. $e->getMessage());
+            return redirect()->back()->with('success', 'Процесс был прерван успешно');
+        } catch (\Exception $e) {
+            Log::channel('log')->error('Ошибка прерывания процесса UID: ' . $e->getMessage());
 
-           return redirect()->back()->with('error',$e->getMessage());
-       }
+            return redirect()->back()->with('error', $e->getMessage());
+        }
 
 
     }

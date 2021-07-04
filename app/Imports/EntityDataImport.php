@@ -6,10 +6,8 @@ use App\Jobs\ProcessUpdateEntityJob;
 use App\Models\ProcessHistory;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
-use Maatwebsite\Excel\Concerns\Importable;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Imports\HeadingRowFormatter;
@@ -50,9 +48,9 @@ class EntityDataImport implements ToCollection,WithHeadingRow
 
         //Отправка в очередь
         $time_start = now();
-        foreach ($entityData as $index=>$line){
-            $lineNum = (int) $index+1; //номер строки
-            ProcessUpdateEntityJob::dispatch($lineNum,request()->entity_id, $line)->onQueue('EntityDataImport')->delay($time_start->addMicroseconds(500000));
+        foreach ($entityData as $index => $line) {
+            $lineNum = (int)$index + 1; //номер строки
+            ProcessUpdateEntityJob::dispatch($lineNum, request()->entity_id, $line)->onQueue('EntityDataImport')->delay($time_start->addMicroseconds(500000));
         }
     }
 
