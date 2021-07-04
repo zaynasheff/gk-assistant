@@ -41,10 +41,7 @@ class ClearLOgFile extends Command
 
         if(Storage::disk('log')->delete('update.log')) {
          //  $this->info(sprintf('Deleted %s %s!', $count, Str::plural('file', $count)));
-        } else {
-          //  $this->error('Error in deleting log files!');
         }
-
 
     }
 }

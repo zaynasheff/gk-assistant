@@ -7,9 +7,11 @@ use App\Imports\EntityDataImport;
 use App\Models\B24FieldsDictionary;
 use App\Models\ProcessHistory;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
 use Maatwebsite\Excel\HeadingRowImport;
 use Maatwebsite\Excel\Imports\HeadingRowFormatter;
+use ZipStream\File;
 
 HeadingRowFormatter::default('none');
 
@@ -114,6 +116,9 @@ class HomeController extends Controller
 
     }
 
+    public function getLog(){
+        return Storage::disk('log')->download('update.log');
 
+    }
 
 }

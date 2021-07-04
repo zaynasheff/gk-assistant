@@ -93,7 +93,7 @@
                                                 <p>Строк в файле: <span id="lines_count"> {{$lastProcess->lines_count}}</span></p>
                                                 <p>Успешно обработано: <span id="lines_success"> {{$lastProcess->lines_success}}</span></p>
                                                 <p>Некритичных ошибок: <span id="lines_error"> {{$lastProcess->lines_error}}</span></p>
-                                                <p>Ссылка на лог ошибок: <a href="https://yandex.ru" target="_blank">error_log_link_here</a></p>
+                                                <p>Ссылка на лог ошибок: <a href="{{route('getLog')}}">лог ошибок</a></p>
                                                 @else
                                                 <p>Процессы не найдены</p>
                                                 @endif
@@ -137,7 +137,8 @@
                                                 <p>Строк в файле: <span id="lines_count"> {{$lastProcess->lines_count}}</span></p>
                                                 <p>Успешно обработано: <span id="lines_success"> {{$lastProcess->lines_success}}</span></p>
                                                 <p>Некритичных ошибок: <span id="lines_error"> {{$lastProcess->lines_error}}</span></p>
-                                                <p>Ссылка на лог ошибок: <a href="https://yandex.ru" target="_blank">error_log_link_here</a></p>
+                                                <p>Ссылка на лог ошибок: <a href="{{route('getLog')}}" >лог ошибок</a></p>
+
                                             </div>
                                         </div>
                                     </div>
