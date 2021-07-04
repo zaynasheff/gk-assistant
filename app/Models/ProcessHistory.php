@@ -2,11 +2,12 @@
 
 namespace App\Models;
 
+use App\Interfaces\ProcessingImportIF;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class ProcessHistory extends Model
+class ProcessHistory extends Model implements ProcessingImportIF
 {
     use HasFactory;
 

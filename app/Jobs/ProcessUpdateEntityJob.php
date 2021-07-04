@@ -47,12 +47,14 @@ class ProcessUpdateEntityJob implements ShouldQueue
     private $current_row_n;
 
 
+
     public function __construct(int $current_row_n, int $entity_id, array $data)
     {
 
         $this->entity_id = $entity_id;
         $this->data = $data;
         $this->current_row_n = $current_row_n;
+
 
     }
 
@@ -64,7 +66,7 @@ class ProcessUpdateEntityJob implements ShouldQueue
     public function handle(Bitrix24API $bitrix24API, ProcessHistory $process)
     {
 
-dd(7777, $process);
+
         try {
             $this->data = $this->validate($this->data);
 
@@ -109,6 +111,10 @@ dd(7777, $process);
                 case 'datetime' :
                     if (!strtotime($value)) throw new Exception("Наименование поля:" . $config->title . "| ID сущности:" . $this->entity_id . "| Описание ошибки:" . 'Поле ' . $key . ' не соотвестввует типу datetime');
                     break;
+                case 'enumeration' :
+                    //TODO !!!!!!!!!1
+                    break;
+
                 default:
                     //Кроме того, возможна ситуация, что значение ячейки содержится в списке запрещенных полей (отдельный признак в таблице полей). В этом случае данный столбец при импорте просто игнорируется без индикации ошибки.
                     $data->forget($key);
