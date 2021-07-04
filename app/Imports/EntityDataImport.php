@@ -45,6 +45,8 @@ class EntityDataImport implements ToCollection,WithHeadingRow
 
         //чистим лог
         Artisan::call('log:clear');
+        //создаем новый лог
+        Log::channel('log')->info('Новый процесс запущен. UID: '.$process->uid);
 
         //Отправка в очередь
         $time_start = now();
