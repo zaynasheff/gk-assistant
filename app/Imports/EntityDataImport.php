@@ -6,6 +6,8 @@ use App\Jobs\ProcessUpdateEntityJob;
 use App\Models\ProcessHistory;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Maatwebsite\Excel\Concerns\Importable;
 use Maatwebsite\Excel\Concerns\ToCollection;
@@ -24,7 +26,9 @@ class EntityDataImport implements ToCollection,WithHeadingRow
     public function collection(Collection $collection)
     {
 
-         ProcessHistory::create([
+        if(ProcessHistory::isRunning()){return redirect()->route('home')->with('error','Процесс уже запущен!');}
+
+        $process =  ProcessHistory::create([
             'uid'=>Str::random(15),
             'process_start'=>now()->toDateTimeString(),
             'process_end'=>null,
@@ -35,17 +39,19 @@ class EntityDataImport implements ToCollection,WithHeadingRow
             'processing'=>1 //процесс запущен
         ]);
 
-
-        $entityData =  $collection->toArray();
+        //$entityData =  $collection->toArray();
 
         //чистим лог
         Artisan::call('log:clear');
 
+        //создаем новый лог
+        Log::channel('log')->info('Новый процесс запущен. UID: '.$process->uid);
+
         //Отправка в очередь
-        foreach ($entityData as $index=>$line){
-            $lineNum = (int) $index+1; //номер строки
-            ProcessUpdateEntityJob::dispatch($lineNum,request()->entity_id, $line)->delay(now()->addMicroseconds(500000));
-        }
+//        foreach ($entityData as $index=>$line){
+//            $lineNum = (int) $index+1; //номер строки
+//            ProcessUpdateEntityJob::dispatch($lineNum,request()->entity_id, $line)->delay(now()->addMicroseconds(500000));
+//        }
     }
 
 
