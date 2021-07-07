@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 
 use App\Imports\EntityDataImport;
+use App\Imports\FieldsMapper;
 use App\Models\B24FieldsDictionary;
 use App\Models\ProcessHistory;
 use Illuminate\Http\Request;
@@ -56,6 +57,7 @@ class HomeController extends Controller
         //заголовки
 
         $headings = (new HeadingRowImport)->toArray($request->file('file'))[0][0];
+        FieldsMapper::map($headings);
 
         //Изначальная валидация
 
@@ -98,7 +100,7 @@ class HomeController extends Controller
             return $item > 1;
         })) {
             $errors = true;
-            $message = 'Процесс не запущен! Наличие в сущности битрикс более одного поля с одним названием:' . $doubled;
+            $message = 'Процесс не запущен! Наличие в сущности битрикс более одного поля с одним названием: ' . $doubled;
         }
 
 
