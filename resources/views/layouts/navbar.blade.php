@@ -15,15 +15,15 @@
                 <i class="fas fa-expand-arrows-alt"></i>
             </a>
         </li>
-        <li class="nav-item">
-            <a class="btn btn-secondary btn-sm mt-1"  role="button" onclick="event.preventDefault();
-                                                     document.getElementById('logout-form').submit();">
-                Выход
-            </a>
-        </li>
+{{--        <li class="nav-item">--}}
+{{--            <a class="btn btn-secondary btn-sm mt-1"  role="button" onclick="event.preventDefault();--}}
+{{--                                                     document.getElementById('logout-form').submit();">--}}
+{{--                Выход--}}
+{{--            </a>--}}
+{{--        </li>--}}
     </ul>
 </nav>
-<form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-    @csrf
-</form>
+{{--<form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">--}}
+{{--    @csrf--}}
+{{--</form>--}}
 <!-- /.navbar -->

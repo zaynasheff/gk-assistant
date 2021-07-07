@@ -19,13 +19,18 @@ Route::get('/', function () {
     return redirect()->route('home');
 });
 
-Auth::routes();
+//Auth::routes();
+//
+//Route::get('/register',function (){
+//    return abort(404);
+//});
+//Route::post('/register',function (){
+//    return abort(404);
+//});
 
-Route::get('/register',function (){
-    return abort(404);
-});
-Route::post('/register',function (){
-    return abort(404);
+Route::get('/', function () {
+
+    return view('welcome');
 });
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
