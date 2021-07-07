@@ -78,6 +78,7 @@ class HomeController extends Controller
 
         //отсутствие в выбранной сущности Битрикс полей с названием, равным значению ячейки
         $b24fields = B24FieldsDictionary::where('entity_id', $request->entity_id)->pluck('title')->toArray();
+        $b24fields_col = collect($b24fields);
 
         $diffFields = array_diff($headings, $b24fields);
 
@@ -92,17 +93,17 @@ class HomeController extends Controller
             $message = 'Процесс не запущен! Пустое значение в заголовке';
 
         }
-
         //наличие в сущности битрикс более одного поля с с названием, равным значению ячейки
-        if (count($b24fields) !== count(array_unique($b24fields))) {
-
+        if ( $doubled = $b24fields_col->countBy()->search(function ($item, $key) {
+            return $item > 1;
+        })) {
             $errors = true;
-            $message = 'Процесс не запущен! Наличие в сущности битрикс более одного поля с одним названием';
+            $message = 'Процесс не запущен! Наличие в сущности битрикс более одного поля с одним названием:' . $doubled;
         }
 
 
         /////временно отключаем валидацию
-        $errors = false;
+       // $errors = false;
 
         if ($errors === true) {
             return redirect()->back()->with('error', $message);
