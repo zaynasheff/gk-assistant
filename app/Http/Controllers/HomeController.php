@@ -96,12 +96,12 @@ class HomeController extends Controller
 
         }
         //наличие в сущности битрикс более одного поля с с названием, равным значению ячейки
-        if ( $doubled = $b24fields_col->countBy()->search(function ($item, $key) {
-            return $item > 1;
-        })) {
-            $errors = true;
-            $message = 'Процесс не запущен! Наличие в сущности битрикс более одного поля с одним названием: ' . $doubled;
-        }
+//        if ( $doubled = $b24fields_col->countBy()->search(function ($item, $key) {
+//            return $item > 1;
+//        })) {
+//            $errors = true;
+//            $message = 'Процесс не запущен! Наличие в сущности битрикс более одного поля с одним названием: ' . $doubled;
+//        }
 
 
         /////временно отключаем валидацию
