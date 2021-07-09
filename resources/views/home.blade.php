@@ -59,7 +59,7 @@
                                     </div>
                                     <div class="col-lg-4">
                                         <div class="form-group">
-                                            <label for="file">Файл(CSV)</label>
+                                            <label for="file">Файл</label>
                                             <div class="custom-file">
                                                 <input type="file" name="file" class="custom-file-input @error('file') is-invalid @enderror" id="file">
                                                 <label class="custom-file-label" for="file">Выбрать файл</label>
