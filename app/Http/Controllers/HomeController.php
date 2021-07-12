@@ -55,6 +55,10 @@ class HomeController extends Controller
 
 
         //заголовки
+        config(['excel.imports.csv.input_encoding' =>
+                \PhpOffice\PhpSpreadsheet\Reader\Csv::guessEncoding($request->file('file'), 'Windows-1251')
+            ]
+        );
 
         $headings = (new HeadingRowImport)->toArray($request->file('file'))[0][0];
         FieldsMapper::map($headings);
