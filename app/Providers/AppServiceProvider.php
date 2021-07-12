@@ -31,7 +31,19 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
          $this->app->bind(Bitrix24API::class, function($app, $params ) {
-              return new Bitrix24API('https://b24-d32s2s.bitrix24.ru/rest/1/22qjwux2xfbo6ubk/');
+             $bx24 = new Bitrix24API('https://b24-d32s2s.bitrix24.ru/rest/1/22qjwux2xfbo6ubk/');
+             $bx24->http->throttle = 2; // не чаще раза в пол сек
+
+             /*                // Устанавливаем каталог для сохранения лог файлов
+                             DebugLogger::$logFileDir = storage_path('b24logs' . DIRECTORY_SEPARATOR);
+                             // Создаем объект класса логгера
+                             $logFileName = 'debug_bitrix24api.log';
+                             $logger = DebugLogger::instance($logFileName);
+                             // Включаем логирование
+                             $logger->isActive = true;
+                             // Устанавливаем логгер
+                             $bx24->setLogger($logger);*/
+             return $bx24;
          });
         $this->app->bind(ProcessingImportIF::class, function($app, $params ) {
             return ProcessHistory::where('processing', 1)->firstOrFail();
