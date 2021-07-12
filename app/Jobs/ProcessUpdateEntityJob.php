@@ -75,6 +75,7 @@ class ProcessUpdateEntityJob implements ShouldQueue
     public function handle(Bitrix24API $bitrix24API, ProcessingImportIF $process)
     {
 
+        $error = null;
 
         try {
             //$entityName = $this->validateEntity();
@@ -98,8 +99,6 @@ class ProcessUpdateEntityJob implements ShouldQueue
             Log::channel('log')->error($error);
             $process->increment('lines_error');
 
-            // чтобы повторить попытку из очереди нужно выкинуть экс так или иначе
-            throw new Exception($error);
         }
 
 
@@ -110,7 +109,10 @@ class ProcessUpdateEntityJob implements ShouldQueue
 
         }
 
-
+        if($error) {
+            // чтобы повторить попытку из очереди нужно выкинуть экс так или иначе
+            throw new Exception($error);
+        }
 
     }
 
