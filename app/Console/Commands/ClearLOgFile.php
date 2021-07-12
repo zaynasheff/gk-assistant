@@ -39,7 +39,7 @@ class ClearLOgFile extends Command
     public function handle()
     {
 
-        if(Storage::disk('log')->delete('update.log')) {
+        if(Storage::disk('log')->put('update.log', '', 'public')) { // Storage::disk('log')->delete('update.log')
          //  $this->info(sprintf('Deleted %s %s!', $count, Str::plural('file', $count)));
         }
 
