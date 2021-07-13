@@ -38,7 +38,7 @@
 
 
                              <form action="{{route('processHandler')}}" method="POST" enctype="multipart/form-data">
-                                @csrf
+
                                 <div class="row">
                                     <div class="col-lg-4">
                                         <div class="form-group">
@@ -133,7 +133,7 @@
                                                         обновить
                                                     </button>
                                                     <form action="{{route('processTerminate')}}" method="POST" class="d-inline">
-                                                        @csrf
+
                                                     <button
                                                         type="submit"
                                                         onclick="confirm('Вы уверены, что хотите прервать процесс?')"
