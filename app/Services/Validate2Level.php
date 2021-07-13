@@ -28,7 +28,8 @@ class Validate2Level
         $data->each(function ($value, $key) use ($b24Entity, &$data, $fields_config, $entity_id) {
             $config = $fields_config->where('title', $key)->first();
             //пустое значение для поля, которое должно быть обязательным к заполнению;
-            if (optional($config)->required && empty(trim($value)))
+            if (optional($config)->required && empty(trim($value))
+            && !self::isNotAnException($config) )
                 throw new Exception("Наименование поля:" . $config->title . "| ID сущности:" . $entity_id. "| Описание ошибки:" . $config->title . ' - обязательное поле');
             if(!empty(trim($value))) {
                 //несоответствие типов - содержимое ячейки не соответствует по типу полю сущности, с которым она ассоциирована;
@@ -110,5 +111,13 @@ class Validate2Level
         return $data;
 
 
+    }
+
+    private static function isNotAnException(B24FieldsDictionary $dict) : bool
+    {
+        if($dict->entity_id == 3 && ( $dict->title=='Фамилия' || $dict->title=='Отчество' ))
+            return true; // Фамилия , Отчество для Контакта
+
+        return false;
     }
 }
