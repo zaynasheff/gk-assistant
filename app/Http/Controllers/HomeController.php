@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Facades\Excel;
 use Maatwebsite\Excel\HeadingRowImport;
 use Maatwebsite\Excel\Imports\HeadingRowFormatter;
@@ -46,12 +47,27 @@ class HomeController extends Controller
     public function processHandler(Request $request)
     {
 
+        $is_running = ProcessHistory::isRunning();
+        $lastProcess = ProcessHistory::orderBy('process_start', 'desc')->first();
+
         $rules = [
             'entity_id' => 'required',
-            //'file'=>'required|mimes:csv,txt',
-            'file' => 'required',
+            'file'=>'required|mimes:csv,txt,xls,xlsx',
+            //'file' => 'required',
         ];
-        $request->validate($rules);
+        //$request->validate($rules);
+
+        $validator = Validator::make($request->all(), $rules);
+
+        if ($validator->fails()) {
+
+           $requestErrors = $validator->getMessageBag()->getMessages();
+
+
+            return view('home', compact('lastProcess', 'is_running','requestErrors'));
+        }
+
+
 
 
         //заголовки
@@ -109,10 +125,11 @@ class HomeController extends Controller
 
 
         /////временно отключаем валидацию
-       // $errors = false;
+        //$errors = false;
 
         if ($errors === true) {
-            return redirect()->back()->with('error', $message);
+            //return redirect()->back()->with('error', $message);
+            return view('home', compact('lastProcess', 'is_running','message'));
         }
 
         ///////////////Импорт файла///////////
@@ -120,7 +137,9 @@ class HomeController extends Controller
         Excel::import(new EntityDataImport, $request->file('file'));
 
 
-        return redirect()->back()->with('success', 'Процесс обработки запущен');
+        //return redirect()->back()->with('success', 'Процесс обработки запущен');
+        $success = 'Процесс обработки запущен';
+        return view('home', compact('lastProcess', 'is_running','success'));
 
     }
 

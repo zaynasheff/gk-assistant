@@ -17,58 +17,61 @@
                     <div class="card">
                         <div class="card-body">
                             @if(!$is_running)
-                                @if(session('success'))
+                                @if(isset($success))
                                     <div class="row">
                                         <div class="col-12">
                                             <div class="alert alert-success mb-5">
-                                                {{session('success')}}
+                                                {{$success}}
                                             </div>
                                         </div>
                                     </div>
                                 @endif
-                              @if(session('error'))
+                                @if(isset($message))
                                   <div class="row">
                                       <div class="col-12">
                                           <div class="alert alert-danger mb-5">
-                                              {{session('error')}}
+                                              {{$message}}
                                           </div>
                                       </div>
                                   </div>
-                              @endif
+                               @endif
 
-
-                             <form action="{{route('processHandler')}}" method="POST" enctype="multipart/form-data">
+                             <div id="loader" class="text-center d-none">
+                                 <img src="{{asset('img/loader.gif')}}" alt="loader" class="img-fluid">
+                                 <h6>Идет обработка запроса</h6>
+                             </div>
+                             <form action="{{route('processHandler')}}" id="processForm" method="POST" enctype="multipart/form-data">
 
                                 <div class="row">
                                     <div class="col-lg-4">
                                         <div class="form-group">
                                             <label for="entity_id">Выберите тип сущности</label>
-                                            <select name="entity_id" id="entity_id" class="form-control @error('entity_id') is-invalid @enderror">
+                                            <select name="entity_id" id="entity_id" class="form-control {{isset($requestErrors['entity_id']) ? ' is-invalid ':''}}">
                                                 <option value="">Выбрать</option>
                                                 @foreach(\App\Models\Entity::pluck('title','id') as $id=>$title)
                                                     <option
                                                         value="{{$id}}" {{old('entity_id') === $id ? 'selected':''}}>{{$title}}</option>
                                                 @endforeach
                                             </select>
-                                            @error('entity_id')
+                                            @if(isset($requestErrors['entity_id']))
                                             <span class="invalid-feedback" role="alert">
-                                                <strong>{{ $message }}</strong>
+                                                <strong>{{$requestErrors['entity_id'][0] }}</strong>
                                             </span>
-                                            @enderror
+                                            @endif
                                         </div>
                                     </div>
                                     <div class="col-lg-4">
                                         <div class="form-group">
                                             <label for="file">Файл</label>
                                             <div class="custom-file">
-                                                <input type="file" name="file" class="custom-file-input @error('file') is-invalid @enderror" id="file">
+                                                <input type="file" name="file" class="custom-file-input {{isset($requestErrors['file']) ? ' is-invalid ':''}}" id="file">
                                                 <label class="custom-file-label" for="file">Выбрать файл</label>
                                             </div>
-                                            @error('file')
+                                            @if(isset($requestErrors['file']))
                                             <span class="invalid-feedback d-block" role="alert">
-                                                <strong>{{ $message }}</strong>
+                                                <strong>{{ $requestErrors['file'][0] }}</strong>
                                             </span>
-                                            @enderror
+                                            @endif
                                         </div>
                                     </div>
                                     <div class="col-lg-4">
@@ -111,11 +114,11 @@
                                     </div>
                                 </div>
                             @else
-                                @if(session('success'))
+                                @if(isset($success))
                                     <div class="row">
                                         <div class="col-12">
                                             <div class="alert alert-success mb-5">
-                                                {{session('success')}}
+                                                {{$success}}
                                             </div>
                                         </div>
                                     </div>
@@ -166,7 +169,12 @@
         </div>
     </div>
 
-
+    <script>
+        $('#startBtn').click(function () {
+            $('#loader').removeClass('d-none').addClass('d-block');
+            $('#processForm').addClass('d-none');
+        });
+    </script>
 
 
 @endsection
