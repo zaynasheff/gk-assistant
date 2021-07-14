@@ -67,7 +67,12 @@ class HomeController extends Controller
             return view('home', compact('lastProcess', 'is_running','requestErrors'));
         }
 
+        if ($request->file('file')->extension() ==='txt'){
+            $requestErrors = ['file'=>[0=>'Неподдерживаемый формат файла']];
 
+
+            return view('home', compact('lastProcess', 'is_running','requestErrors'));
+        }
 
 
         //заголовки
@@ -77,6 +82,7 @@ class HomeController extends Controller
         );
 
         $headings = (new HeadingRowImport)->toArray($request->file('file'))[0][0];
+
         FieldsMapper::map($headings);
 
         //Изначальная валидация
