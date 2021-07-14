@@ -83,7 +83,7 @@ return [
         'string' => 'The :attribute must not be greater than :max characters.',
         'array' => 'The :attribute must not have more than :max items.',
     ],
-    'mimes' => 'Неверный формат файла. Загрузите файл формата :values.',
+    'mimes' => 'Неверный формат файла. Загрузите файл формата csv,xls,xlsx.',
     'mimetypes' => 'Неверный формат файла. Загрузите файл формата csv',
     'min' => [
         'numeric' => 'The :attribute must be at least :min.',
