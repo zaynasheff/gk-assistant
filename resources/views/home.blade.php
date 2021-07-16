@@ -10,6 +10,8 @@
             </div>
         </div>
     </div>
+
+
     <div class="content">
         <div class="container-fluid">
             <div class="row mt-5">
@@ -17,20 +19,21 @@
                     <div class="card">
                         <div class="card-body">
                             @if(!$is_running)
-                                @if(isset($success))
+                                @if(request('success'))
+
                                     <div class="row">
                                         <div class="col-12">
                                             <div class="alert alert-success mb-5">
-                                                {{$success}}
+                                                {{request('success')}}
                                             </div>
                                         </div>
                                     </div>
                                 @endif
-                                @if(isset($message))
+                                @if(request('message'))
                                   <div class="row">
                                       <div class="col-12">
                                           <div class="alert alert-danger mb-5">
-                                              {{$message}}
+                                              {{request('message')}}
                                           </div>
                                       </div>
                                   </div>
@@ -46,16 +49,16 @@
                                     <div class="col-lg-4">
                                         <div class="form-group">
                                             <label for="entity_id">Выберите тип сущности</label>
-                                            <select name="entity_id" id="entity_id" class="form-control {{isset($requestErrors['entity_id']) ? ' is-invalid ':''}}">
+                                            <select name="entity_id" id="entity_id" class="form-control {{isset(request('requestErrors')['entity_id']) ? ' is-invalid ':''}}">
                                                 <option value="">Выбрать</option>
                                                 @foreach(\App\Models\Entity::pluck('title','id') as $id=>$title)
                                                     <option
                                                         value="{{$id}}" {{old('entity_id') === $id ? 'selected':''}}>{{$title}}</option>
                                                 @endforeach
                                             </select>
-                                            @if(isset($requestErrors['entity_id']))
+                                            @if(isset(request('requestErrors')['entity_id']))
                                             <span class="invalid-feedback" role="alert">
-                                                <strong>{{$requestErrors['entity_id'][0] }}</strong>
+                                                <strong>{{request('requestErrors')['entity_id'][0] }}</strong>
                                             </span>
                                             @endif
                                         </div>
@@ -64,12 +67,12 @@
                                         <div class="form-group">
                                             <label for="file">Файл</label>
                                             <div class="custom-file">
-                                                <input type="file" name="file" class="custom-file-input {{isset($requestErrors['file']) ? ' is-invalid ':''}}" id="file">
+                                                <input type="file" name="file" class="custom-file-input {{isset(request('requestErrors')['file']) ? ' is-invalid ':''}}" id="file">
                                                 <label class="custom-file-label" for="file">Выбрать файл</label>
                                             </div>
-                                            @if(isset($requestErrors['file']))
+                                            @if(isset(request('requestErrors')['file']))
                                             <span class="invalid-feedback d-block" role="alert">
-                                                <strong>{{ $requestErrors['file'][0] }}</strong>
+                                                <strong>{{request('requestErrors')['file'][0] }}</strong>
                                             </span>
                                             @endif
                                         </div>
@@ -114,15 +117,24 @@
                                     </div>
                                 </div>
                             @else
-                                @if(isset($success))
+                                @if(request('success'))
                                     <div class="row">
                                         <div class="col-12">
                                             <div class="alert alert-success mb-5">
-                                                {{$success}}
+                                                {{request('success')}}
                                             </div>
                                         </div>
                                     </div>
                                 @endif
+                                    @if(request('message'))
+                                        <div class="row">
+                                            <div class="col-12">
+                                                <div class="alert alert-danger mb-5">
+                                                    {{request('message')}}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endif
                                <script>
                                    setTimeout(() => window.location.reload(), 60000);
                                </script>
@@ -133,7 +145,7 @@
                                                 <div id="titleContainer">
                                                     <h4 id="historyTitle" class="d-inline">Идет выполнение процесса...</h4>
                                                     <button
-                                                        onclick="location.reload()"
+                                                        onclick="location.href='{{route('home')}}'"
                                                         class="btn btn-sm btn-success d-inline ml-3 mr-3">
                                                         <i class="fa fa-sync mr-2"></i>
                                                         обновить

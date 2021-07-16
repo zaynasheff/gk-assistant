@@ -47,8 +47,6 @@ class HomeController extends Controller
     public function processHandler(Request $request)
     {
 
-        $is_running = ProcessHistory::isRunning();
-        $lastProcess = ProcessHistory::orderBy('process_start', 'desc')->first();
 
         $rules = [
             'entity_id' => 'required',
@@ -64,12 +62,20 @@ class HomeController extends Controller
            $requestErrors = $validator->getMessageBag()->getMessages();
 
 
-            return view('home', compact('lastProcess', 'is_running','requestErrors'));
+            //return view('home', compact('lastProcess', 'is_running','requestErrors'));
+
+            return redirect()->route('home',[
+                'requestErrors'=>$requestErrors
+            ]);
         }
 
         if ($request->file('file')->getClientOriginalExtension() ==='txt'){
             $requestErrors = ['file'=>[0=>'Неподдерживаемый формат файла']];
-            return view('home', compact('lastProcess', 'is_running','requestErrors'));
+            //return view('home', compact('lastProcess', 'is_running','requestErrors'));
+
+            return redirect()->route('home',[
+                'requestErrors'=>$requestErrors
+            ]);
         }
 
 
@@ -132,18 +138,31 @@ class HomeController extends Controller
         //$errors = false;
 
         if ($errors === true) {
-            //return redirect()->back()->with('error', $message);
-            return view('home', compact('lastProcess', 'is_running','message'));
+
+            return redirect()->route('home',[
+                'message'=>$message
+            ]);
         }
 
         ///////////////Импорт файла///////////
+        try{
+            Excel::import(new EntityDataImport, $request->file('file'));
+        }
 
-        Excel::import(new EntityDataImport, $request->file('file'));
+        catch (\Exception $e){
+            $message = $e->getMessage();
+            return redirect()->route('home',[
+                'message'=>$message
+            ]);
+        }
+
 
 
         //return redirect()->back()->with('success', 'Процесс обработки запущен');
         $success = 'Процесс обработки запущен';
-        return view('home', compact('lastProcess', 'is_running','success'));
+        return redirect()->route('home',[
+              'success'=>$success
+        ]);
 
     }
 
@@ -157,8 +176,7 @@ class HomeController extends Controller
     public function processTerminate()
     {
         try {
-            $is_running = ProcessHistory::isRunning();
-            $lastProcess = ProcessHistory::orderBy('process_start', 'desc')->first();
+
             //чистим очередь
             Artisan::call('queue:clear --queue=EntityDataImport');
             $process = ProcessHistory::where('processing', 1)->first();
@@ -166,14 +184,19 @@ class HomeController extends Controller
             $process->save();
             Log::channel('log')->info('Процесс UID: ' . $process->uid . ' был прерван  ' . now()->format('d.m.Y h:i:s'));
 
-            //return redirect()->back()->with('success', 'Процесс был прерван успешно');
+
             $success = 'Процесс был прерван успешно';
-            return view('home', compact('lastProcess', 'is_running','success'));
+
+            return redirect()->route('home',[
+                'success'=>$success
+            ]);
         } catch (\Exception $e) {
             Log::channel('log')->error('Ошибка прерывания процесса UID: ' . $e->getMessage());
             $message = $e->getMessage();
-            return view('home', compact('lastProcess', 'is_running','message'));
-            //return redirect()->back()->with('error', $e->getMessage());
+
+            return redirect()->route('home',[
+                'message'=>$message
+            ]);
         }
 
 
