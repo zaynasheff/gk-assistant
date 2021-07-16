@@ -30,7 +30,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-         $this->app->bind(Bitrix24API::class, function($app, $params ) {
+         $this->app->singleton(Bitrix24API::class, function($app, $params ) {
              $bx24 = new Bitrix24API('https://b24-d32s2s.bitrix24.ru/rest/1/22qjwux2xfbo6ubk/');
              $bx24->http->throttle = 2; // не чаще раза в пол сек
 
