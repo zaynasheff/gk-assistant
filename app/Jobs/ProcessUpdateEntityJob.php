@@ -44,7 +44,7 @@ class ProcessUpdateEntityJob implements ShouldQueue
         'crm',
     ];
 
-
+    public $tries = 1;
     private $data;
     private $entity_id;
     /**
