@@ -157,6 +157,8 @@ class HomeController extends Controller
     public function processTerminate()
     {
         try {
+            $is_running = ProcessHistory::isRunning();
+            $lastProcess = ProcessHistory::orderBy('process_start', 'desc')->first();
             //чистим очередь
             Artisan::call('queue:clear --queue=EntityDataImport');
             $process = ProcessHistory::where('processing', 1)->first();
@@ -164,11 +166,14 @@ class HomeController extends Controller
             $process->save();
             Log::channel('log')->info('Процесс UID: ' . $process->uid . ' был прерван  ' . now()->format('d.m.Y h:i:s'));
 
-            return redirect()->back()->with('success', 'Процесс был прерван успешно');
+            //return redirect()->back()->with('success', 'Процесс был прерван успешно');
+            $success = 'Процесс был прерван успешно';
+            return view('home', compact('lastProcess', 'is_running','success'));
         } catch (\Exception $e) {
             Log::channel('log')->error('Ошибка прерывания процесса UID: ' . $e->getMessage());
-
-            return redirect()->back()->with('error', $e->getMessage());
+            $message = $e->getMessage();
+            return view('home', compact('lastProcess', 'is_running','message'));
+            //return redirect()->back()->with('error', $e->getMessage());
         }
 
 
