@@ -30,12 +30,12 @@ class Validate2Level
             //пустое значение для поля, которое должно быть обязательным к заполнению;
             if (optional($config)->required && empty(trim($value))
             && !self::isNotAnException($config) )
-                throw new Exception("Наименование поля:" . $config->title . "| ID сущности:" . $entity_id. "| Описание ошибки:" . $config->title . ' - обязательное поле');
+                throw new Exception("Номер столбца:" . self::getNameFromNumber($key+1) . "| ID сущности:" . $data["ID"] . "| Описание ошибки:" . $config->title . ' - обязательное поле');
             if(!empty(trim($value))) {
                 //несоответствие типов - содержимое ячейки не соответствует по типу полю сущности, с которым она ассоциирована;
                 switch (optional($config)->field_type) {
                     case 'integer' :
-                        if (!is_numeric($value)) throw new Exception("Наименование поля:" . $config->title . "| ID сущности:" . $entity_id . "| Описание ошибки:" . $this->entity->id . "|" . 'Поле ' . $key . ' не соотвестввует типу integer');
+                        if (!is_numeric($value)) throw new Exception("Номер столбца:" . self::getNameFromNumber($key+1) . "| ID сущности:" . $data["ID"] . "| Описание ошибки:" . $this->entity->id . "|" . 'Поле ' . $key . ' не соотвестввует типу integer');
 
                         unset($data[$key]);
                         $data[$config->field_code] = $value;
@@ -46,17 +46,17 @@ class Validate2Level
                         break;
                     case 'boolean' :
 
-                        if (!is_bool($value)) throw new Exception("Наименование поля:" . $config->title . "| ID сущности:" . $entity_id . "| Описание ошибки:" . 'Поле ' . $key . ' не соотвестввует типу boolean');
+                        if (!is_bool($value)) throw new Exception("Номер столбца:" . self::getNameFromNumber($key+1) . "| ID сущности:" . $data["ID"]  . "| Описание ошибки:" . 'Поле ' . $key . ' не соотвестввует типу boolean');
                         unset($data[$key]);
                         $data[$config->field_code] = $value;
                         break;
                     case 'double' :
-                        if (!is_numeric($value)) throw new Exception("Наименование поля:" . $config->title . "| ID сущности:" . $entity_id . "| Описание ошибки:" . 'Поле ' . $key . ' не соотвестввует типу double');
+                        if (!is_numeric($value)) throw new Exception("Номер столбца:" . self::getNameFromNumber($key+1) . "| ID сущности:" . $data["ID"]  . "| Описание ошибки:" . 'Поле ' . $key . ' не соотвестввует типу double');
                         unset($data[$key]);
                         $data[$config->field_code] = $value;
                         break;
                     case 'datetime' :
-                        if (!strtotime($value)) throw new Exception("Наименование поля:" . $config->title . "| ID сущности:" . $entity_id . "| Описание ошибки:" . 'Поле ' . $key . ' не соотвестввует типу datetime');
+                        if (!strtotime($value)) throw new Exception("Номер столбца:" . self::getNameFromNumber($key+1) . "| ID сущности:" . $data["ID"]  . "| Описание ошибки:" . 'Поле ' . $key . ' не соотвестввует типу datetime');
                         unset($data[$key]);
                         $data[$config->field_code] = $value;
                         break;
@@ -119,5 +119,16 @@ class Validate2Level
             return true; // Фамилия , Отчество для Контакта
 
         return false;
+    }
+    public static function getNameFromNumber($num)
+    {
+        $numeric = ($num - 1) % 26;
+        $letter = chr(65 + $numeric);
+        $num2 = intval(($num - 1) / 26);
+        if ($num2 > 0) {
+            return self::getNameFromNumber($num2) . $letter;
+        } else {
+            return $letter;
+        }
     }
 }
