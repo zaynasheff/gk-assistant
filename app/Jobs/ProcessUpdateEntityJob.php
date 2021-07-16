@@ -44,7 +44,7 @@ class ProcessUpdateEntityJob implements ShouldQueue
         'crm',
     ];
 
-
+    public $tries = 1;
     private $data;
     private $entity_id;
     /**
@@ -96,7 +96,7 @@ class ProcessUpdateEntityJob implements ShouldQueue
             // Номер_строки | Номер_столбца | IDсущности | Описание_ошибки
             //  Пример: 12312 ABX ID321321 поле “Сумма сделки” пусто
 
-            $error = 'Номер_строки:' . $this->current_row_n . "|" . $e->getMessage() . "| файл:" . $e->getFile() . "| строка:" . $e->getLine();
+            $error = 'Номер_строки:' . $this->current_row_n . "|" . $e->getMessage() . ";файл:" . $e->getFile() . ";строка:" . $e->getLine();
             //Log::channel('log')->error($error);
             Storage::disk('log')->append('update.log', $error);
             $process->increment('lines_error');
