@@ -18,6 +18,7 @@ use Illuminate\Support\Collection;
 use Exception;
 use Illuminate\Support\Facades\Log;
 use App\Services\Bitrix24ConcreteMethodFactory;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * Class ProcessUpdateEntityJob
@@ -96,7 +97,8 @@ class ProcessUpdateEntityJob implements ShouldQueue
             //  Пример: 12312 ABX ID321321 поле “Сумма сделки” пусто
 
             $error = 'Номер_строки:' . $this->current_row_n . "|" . $e->getMessage() . "| файл:" . $e->getFile() . "| строка:" . $e->getLine();
-            Log::channel('log')->error($error);
+            //Log::channel('log')->error($error);
+            Storage::disk('log')->append('update.log', $error);
             $process->increment('lines_error');
 
         }

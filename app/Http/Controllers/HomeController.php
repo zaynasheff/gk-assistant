@@ -67,7 +67,7 @@ class HomeController extends Controller
             return view('home', compact('lastProcess', 'is_running','requestErrors'));
         }
 
-        if ($request->file('file')->extension() ==='txt'){
+        if ($request->file('file')->getClientOriginalExtension() ==='txt'){
             $requestErrors = ['file'=>[0=>'Неподдерживаемый формат файла']];
             return view('home', compact('lastProcess', 'is_running','requestErrors'));
         }
