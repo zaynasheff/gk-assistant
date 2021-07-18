@@ -67,14 +67,7 @@ class ProcessUpdateEntityJob implements ShouldQueue
      * @var mixed
      */
     private $b24ID;
-    /**
-     * @var Bitrix24API
-     */
-    private $b24;
-    /**
-     * @var ProcessingImportIF
-     */
-    private $process;
+
 
 
     public function __construct(int $current_row_n, int $entity_id, array $data)
@@ -96,12 +89,12 @@ class ProcessUpdateEntityJob implements ShouldQueue
     public function handle(Bitrix24API $bitrix24API, ProcessingImportIF $process)
     {
 
-        $this->process = $process;
-        $this->b24 = $bitrix24API;
+        //$this->process = $process;
+        //$this->b24 = $bitrix24API;
 
-        Redis::throttle('key')->block(0)->allow(60)->every(60)->then(function () {
+        Redis::throttle('key')->block(0)->allow(60)->every(60)->then(function () use ($process) {
            // info('Lock obtained...');
-            $this->doTheJob();
+            $this->doTheJob($process);
 
         }, function () {
             // Could not obtain lock...
@@ -112,7 +105,7 @@ class ProcessUpdateEntityJob implements ShouldQueue
 
     }
 
-    private function doTheJob()
+    private function doTheJob(ProcessingImportIF $process)
     {
 
         Log::channel('ext_debug')->debug("start new ProcessUpdateEntityJob: ",
@@ -134,8 +127,8 @@ class ProcessUpdateEntityJob implements ShouldQueue
                 Validate2Level::validateData($this->data, $this->entity_id, $b24Entity)->toArray()
             );
 
-            $this->process->increment('lines_success');
-            Log::channel('ext_debug')->debug("increment lines_success:" . $this->process->lines_success);
+            $process->increment('lines_success');
+            Log::channel('ext_debug')->debug("increment lines_success:" . $process->lines_success);
 
 
 
@@ -147,17 +140,17 @@ class ProcessUpdateEntityJob implements ShouldQueue
             $error = 'Номер строки:' . $this->current_row_n . "|" . $e->getMessage()  ; //. ";файл:" . $e->getFile() . ";строка:" . $e->getLine();
             Log::channel('ext_debug')->debug("validator exception:" .  $error);
             Storage::disk('log')->append('update.log', $error);
-            $this->process->increment('lines_error');
-            Log::channel('ext_debug')->debug("increment lines_error:" . $this->process->lines_error);
+            $process->increment('lines_error');
+            Log::channel('ext_debug')->debug("increment lines_error:" . $process->lines_error);
 
         }
 
 
 
-        if($this->current_row_n >= $this->process->lines_count ) {
-            $this->process->processing = 3;
-            $this->process->process_end = now()->toDateTimeString();
-            $this->process->save();
+        if($this->current_row_n >= $process->lines_count ) {
+            $process->processing = 3;
+            $process->process_end = now()->toDateTimeString();
+            $process->save();
             Log::channel('ext_debug')->debug("finish ProcessUpdateEntityJob:"  ,
                 [
                     'current_row_n' => $this->current_row_n,
