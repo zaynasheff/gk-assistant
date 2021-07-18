@@ -67,16 +67,20 @@ class ProcessUpdateEntityJob implements ShouldQueue
      * @var mixed
      */
     private $b24ID;
+    /**
+     * @var ProcessHistory
+     */
+    private $processHistory;
 
 
-
-    public function __construct(int $current_row_n, int $entity_id, array $data)
+    public function __construct(int $current_row_n, int $entity_id, array $data, ProcessHistory $processHistory)
     {
 
         $this->entity_id = $entity_id;
         $this->data = $data;
         $this->current_row_n = $current_row_n;
         $this->b24ID = $data["ID"];
+        $this->processHistory = $processHistory;
 
     }
 
@@ -86,7 +90,7 @@ class ProcessUpdateEntityJob implements ShouldQueue
      * @return void
      * @throws Exception
      */
-    public function handle(Bitrix24API $bitrix24API)  // ProcessingImportIF $process
+    public function handle(Bitrix24API $bitrix24API) // ProcessingImportIF $process
     {
 
         //$this->process = $process;
@@ -107,7 +111,8 @@ class ProcessUpdateEntityJob implements ShouldQueue
 
     private function doTheJob()
     {
-        $process = ProcessHistory::where('processing', 1)->firstOrFail();
+        $error = null;
+        $process = $this->processHistory;
 
         Log::channel('ext_debug')->debug("start new ProcessUpdateEntityJob: ",
             [
@@ -117,7 +122,7 @@ class ProcessUpdateEntityJob implements ShouldQueue
                 'data' => $this->data,
             ]
         );
-        $error = null;
+
 
         try {
             //$entityName = $this->validateEntity();
