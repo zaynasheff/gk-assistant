@@ -21,7 +21,7 @@ class Validate2Level
      */
     public static function validateData(array $data, int $entity_id, array $b24Entity): Collection
     {
-        Log::channel('debug')->debug("start validating. ");
+        Log::channel('ext_debug')->debug("start validating. ");
 
         $fields_config = B24FieldsDictionary::where('entity_id', $entity_id)->get();
 
@@ -101,18 +101,18 @@ class Validate2Level
                     default:
                         //Кроме того, возможна ситуация, что значение ячейки содержится в списке запрещенных полей (отдельный признак в таблице полей). В этом случае данный столбец при импорте просто игнорируется без индикации ошибки.
                         $data->forget($key);
-                        Log::channel('debug')->debug("skip forbidden column:", [$value, $key]);
+                        Log::channel('ext_debug')->debug("skip forbidden column:", [$value, $key]);
 
                 }
             }  else {
                 $data->forget($key);
-                Log::channel('debug')->debug("skip empty column:", [$value, $key]);
+                Log::channel('ext_debug')->debug("skip empty column:", [$value, $key]);
 
             }
 
         });
 
-        Log::channel('debug')->debug("validated data:", $data);
+        Log::channel('ext_debug')->debug("validated data:", $data);
 
         return $data;
 
