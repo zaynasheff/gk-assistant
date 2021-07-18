@@ -94,7 +94,7 @@ class ProcessUpdateEntityJob implements ShouldQueue
 
         Redis::throttle('key')->block(0)->allow(60)->every(60)->then(function () use ($process) {
            // info('Lock obtained...');
-            $this->doTheJob($process);
+            $this->doTheJob();
 
         }, function () {
             // Could not obtain lock...
