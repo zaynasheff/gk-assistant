@@ -18,6 +18,7 @@ use Illuminate\Support\Collection;
 use Exception;
 use Illuminate\Support\Facades\Log;
 use App\Services\Bitrix24ConcreteMethodFactory;
+use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Storage;
 
 /**
@@ -43,10 +44,21 @@ class ProcessUpdateEntityJob implements ShouldQueue
         'crm_status',
         'crm',
     ];
-
-    public $tries = 1;
+    /**
+     * The maximum number of unhandled exceptions to allow before failing.
+     *
+     * @var int
+     */
+    public $maxExceptions = 3;
+    /**
+     * The number of times the job may be attempted.
+     *
+     * @var int
+     */
+    public $tries = 3;
     private $data;
     private $entity_id;
+
     /**
      * @var int
      */
@@ -55,6 +67,14 @@ class ProcessUpdateEntityJob implements ShouldQueue
      * @var mixed
      */
     private $b24ID;
+    /**
+     * @var Bitrix24API
+     */
+    private $b24;
+    /**
+     * @var ProcessingImportIF
+     */
+    private $process;
 
 
     public function __construct(int $current_row_n, int $entity_id, array $data)
@@ -76,13 +96,32 @@ class ProcessUpdateEntityJob implements ShouldQueue
     public function handle(Bitrix24API $bitrix24API, ProcessingImportIF $process)
     {
 
+        $this->process = $process;
+        $this->b24 = $bitrix24API;
+
+        Redis::throttle('key')->block(0)->allow(60)->every(60)->then(function () {
+           // info('Lock obtained...');
+            $this->doTheJob();
+
+        }, function () {
+            // Could not obtain lock...
+
+            return $this->release(10);
+        });
+
+
+    }
+
+    private function doTheJob()
+    {
+
         Log::channel('debug')->debug("start new ProcessUpdateEntityJob: ",
-        [
-            'current_row_n' => $this->current_row_n,
-            'entity_id' => $this->entity_id,
-            'b24ID' => $this->b24ID,
-            'data' => $this->data,
-        ]
+            [
+                'current_row_n' => $this->current_row_n,
+                'entity_id' => $this->entity_id,
+                'b24ID' => $this->b24ID,
+                'data' => $this->data,
+            ]
         );
         $error = null;
 
@@ -95,8 +134,8 @@ class ProcessUpdateEntityJob implements ShouldQueue
                 Validate2Level::validateData($this->data, $this->entity_id, $b24Entity)->toArray()
             );
 
-            $process->increment('lines_success');
-            Log::channel('debug')->debug("increment lines_success:" . $process->lines_success);
+            $this->process->increment('lines_success');
+            Log::channel('debug')->debug("increment lines_success:" . $this->process->lines_success);
 
 
 
@@ -108,17 +147,17 @@ class ProcessUpdateEntityJob implements ShouldQueue
             $error = 'Номер строки:' . $this->current_row_n . "|" . $e->getMessage()  ; //. ";файл:" . $e->getFile() . ";строка:" . $e->getLine();
             Log::channel('debug')->debug("validator exception:" .  $error);
             Storage::disk('log')->append('update.log', $error);
-            $process->increment('lines_error');
-            Log::channel('debug')->debug("increment lines_error:" . $process->lines_error);
+            $this->process->increment('lines_error');
+            Log::channel('debug')->debug("increment lines_error:" . $this->process->lines_error);
 
         }
 
 
 
-        if($this->current_row_n >= $process->lines_count ) {
-            $process->processing = 3;
-            $process->process_end = now()->toDateTimeString();
-            $process->save();
+        if($this->current_row_n >= $this->process->lines_count ) {
+            $this->process->processing = 3;
+            $this->process->process_end = now()->toDateTimeString();
+            $this->process->save();
             Log::channel('debug')->debug("finish ProcessUpdateEntityJob:"  ,
                 [
                     'current_row_n' => $this->current_row_n,
@@ -126,15 +165,15 @@ class ProcessUpdateEntityJob implements ShouldQueue
             );
 
         }
-// попытку не повторяем
-/*        if($error) {
+
+        if($error) {
             // чтобы повторить попытку из очереди нужно выкинуть экс так или иначе
+            // попыток у нас нет, но по крайней мере увидим что-то в failed_jobs
             throw new Exception($error);
-        }*/
+        }
+
 
     }
-
-
 
 
 }
