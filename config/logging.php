@@ -107,7 +107,7 @@ return [
         ],
         'ext_debug' => [
             'driver' => 'daily',
-            'path' => storage_path('logs/dev/debug.log'),
+            'path' => storage_path('logs/debug.log'),
             'level' => env('LOG_LEVEL', 'debug'),
             'days' => 14,
         ],
