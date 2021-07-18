@@ -96,6 +96,7 @@ class ProcessUpdateEntityJob implements ShouldQueue
             );
 
             $process->increment('lines_success');
+            Log::channel('debug')->debug("increment lines_success:" . $process->lines_success);
 
 
 
@@ -105,9 +106,10 @@ class ProcessUpdateEntityJob implements ShouldQueue
             //  Пример: 12312 ABX ID321321 поле “Сумма сделки” пусто
 
             $error = 'Номер строки:' . $this->current_row_n . "|" . $e->getMessage()  ; //. ";файл:" . $e->getFile() . ";строка:" . $e->getLine();
-            //Log::channel('log')->error($error);
+            Log::channel('debug')->debug("validator exception:" .  $error);
             Storage::disk('log')->append('update.log', $error);
             $process->increment('lines_error');
+            Log::channel('debug')->debug("increment lines_error:" . $process->lines_error);
 
         }
 
@@ -117,13 +119,18 @@ class ProcessUpdateEntityJob implements ShouldQueue
             $process->processing = 3;
             $process->process_end = now()->toDateTimeString();
             $process->save();
+            Log::channel('debug')->debug("finish ProcessUpdateEntityJob:"  ,
+                [
+                    'current_row_n' => $this->current_row_n,
+                ]
+            );
 
         }
-
-        if($error) {
+// попытку не повторяем
+/*        if($error) {
             // чтобы повторить попытку из очереди нужно выкинуть экс так или иначе
             throw new Exception($error);
-        }
+        }*/
 
     }
 
