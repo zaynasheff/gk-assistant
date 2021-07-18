@@ -46,7 +46,8 @@ class EntityDataImport implements ToCollection, WithHeadingRow
 
         $entityData = $collection->toArray();
 
-
+        //рестарт очередей , важно т.к. AppServiceProvider boot работает только в этом случае
+        Artisan::call('queue:restart');
         //чистим лог
         Artisan::call('log:clear');
         //создаем новый лог
@@ -54,7 +55,7 @@ class EntityDataImport implements ToCollection, WithHeadingRow
 
         //Отправка в очередь
         $time_start = now();
-        foreach ($entityData as $index => $line) {
+        foreach ($entityData as $index => $line) { dd( $index, $line );
             $lineNum = (int)$index + 1; //номер строки
             ProcessUpdateEntityJob::dispatch($lineNum, request()->entity_id, $line)->onQueue('EntityDataImport')->delay($time_start->addMicroseconds(1000000));
         }
