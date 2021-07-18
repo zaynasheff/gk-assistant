@@ -112,7 +112,7 @@ class Validate2Level
 
         });
 
-        Log::channel('ext_debug')->debug("validated data:", $data);
+        Log::channel('ext_debug')->debug("validated data:", $data->toArray());
 
         return $data;
 
