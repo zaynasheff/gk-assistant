@@ -76,6 +76,14 @@ class ProcessUpdateEntityJob implements ShouldQueue
     public function handle(Bitrix24API $bitrix24API, ProcessingImportIF $process)
     {
 
+        Log::channel('debug')->debug("start new ProcessUpdateEntityJob: ",
+        [
+            'current_row_n' => $this->current_row_n,
+            'entity_id' => $this->entity_id,
+            'b24ID' => $this->b24ID,
+            'data' => $this->data,
+        ]
+        );
         $error = null;
 
         try {

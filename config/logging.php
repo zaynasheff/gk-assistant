@@ -104,7 +104,13 @@ return [
         'log' => [
             'driver' => 'single',
             'path' => storage_path('logs/update.log'),
-        ]
+        ],
+        'debug' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/debug.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+        ],
     ],
 
 ];
