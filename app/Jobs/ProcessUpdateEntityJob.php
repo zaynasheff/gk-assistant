@@ -86,7 +86,7 @@ class ProcessUpdateEntityJob implements ShouldQueue
      * @return void
      * @throws Exception
      */
-    public function handle(Bitrix24API $bitrix24API, ProcessingImportIF $process)
+    public function handle(Bitrix24API $bitrix24API)  // ProcessingImportIF $process
     {
 
         //$this->process = $process;
@@ -105,8 +105,9 @@ class ProcessUpdateEntityJob implements ShouldQueue
 
     }
 
-    private function doTheJob(ProcessingImportIF $process)
+    private function doTheJob()
     {
+        $process = ProcessHistory::where('processing', 1)->firstOrFail();
 
         Log::channel('ext_debug')->debug("start new ProcessUpdateEntityJob: ",
             [
