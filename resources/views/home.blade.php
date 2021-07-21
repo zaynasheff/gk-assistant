@@ -186,7 +186,12 @@
                                             url: "{{route('getSuccessCount')}}",
                                             type: "post",
                                             success: function (response) {
-                                                console.log(response);
+                                                $('#lines_success').text(response.countSuccess);
+                                                $('#lines_error').text(response.countSuccess);
+
+                                                if(response.countSuccess + response.countSuccess === response.count ){
+                                                    location.href='{{route('home')}}'
+                                                }
 
                                             }
                                         });
