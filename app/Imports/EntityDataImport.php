@@ -35,7 +35,7 @@ class EntityDataImport implements ToCollection, WithHeadingRow
         $process = ProcessHistory::create([
             'uid' => Str::random(15),
             'process_start' => now()->toDateTimeString(),
-            'process_end' => now()->addSeconds(count($collection) * 3)->toDateTimeString(),
+            'process_end' => now()->addSeconds(count($collection))->toDateTimeString(),
             'entity_id' => request()->entity_id,
             'lines_count' => count($collection),
             'lines_success' => 0,
