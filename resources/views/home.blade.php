@@ -136,7 +136,7 @@
                                         </div>
                                     @endif
                                <script>
-                                   setTimeout(() => window.location.reload(), 60000);
+                                   setTimeout(() => location.href='{{route('home')}}', 60000);
                                </script>
                                 <div class="row mt-5">
                                     <div class="col-12">
