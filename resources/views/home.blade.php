@@ -174,14 +174,17 @@
                                     </div>
                                 </div>
                                 <script>
+                                    setTimeout(
                                         $.ajax({
                                             url: "{{route('getSuccessCount')}}",
                                             type: "post",
                                             success: function (response) {
                                                 console.log(response);
-
                                             }
-                                        });
+                                        }),
+                                        1000
+                                    );
+
                                 </script>
 
                             @endif
