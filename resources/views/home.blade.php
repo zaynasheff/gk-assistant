@@ -188,7 +188,7 @@
                                             }
                                         });
 
-                                        setTimeout(getSuccessCount(), 1000);
+                                        // setTimeout(getSuccessCount(), 1000);
                                     }
 
 
