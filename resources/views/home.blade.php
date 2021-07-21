@@ -135,9 +135,9 @@
                                             </div>
                                         </div>
                                     @endif
-                               <script>
-                                   setTimeout(() => location.href='{{route('home')}}', 60000);
-                               </script>
+{{--                               <script>--}}
+{{--                                   setTimeout(() => location.href='{{route('home')}}', 60000);--}}
+{{--                               </script>--}}
                                 <div class="row mt-5">
                                     <div class="col-12">
                                         <div class="card">
@@ -174,16 +174,25 @@
                                     </div>
                                 </div>
                                 <script>
-                                    setTimeout(
+
+                                    getSuccessCount();
+
+                                    function getSuccessCount(){
+
+
                                         $.ajax({
                                             url: "{{route('getSuccessCount')}}",
                                             type: "post",
                                             success: function (response) {
                                                 console.log(response);
                                             }
-                                        }),
-                                        1000
-                                    );
+                                        });
+
+                                        setTimeout(getSuccessCount(), 1000);
+                                    }
+
+
+
 
                                 </script>
 
