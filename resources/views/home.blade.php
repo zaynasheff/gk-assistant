@@ -175,7 +175,9 @@
                                 </div>
                                 <script>
 
-                                    getSuccessCount();
+                                    $(document).ready(function(){
+                                        setInterval(getSuccessCount,1000);
+                                    });
 
                                     function getSuccessCount(){
 
@@ -185,10 +187,11 @@
                                             type: "post",
                                             success: function (response) {
                                                 console.log(response);
+
                                             }
                                         });
 
-                                        // setTimeout(getSuccessCount(), 1000);
+
                                     }
 
 
