@@ -165,7 +165,7 @@
                                                 <p>Время запуска: <span id="process_start"> {{$lastProcess->process_start}}</span></p>
                                                 <p>Плановое время завершения: <span id="process_end"> {{$lastProcess->process_end}}</span></p>
                                                 <p>Тип сущности: <span id="entity_title"> {{$lastProcess->entity->title}}</span></p>
-                                                <p>Обработано: <span id="lines_success"> {{$lastProcess->lines_success}} </span>из<span id="lines_count"> {{$lastProcess->lines_count}}</span></p>
+                                                <p>Обработано: <span id="lines_success"> {{$lastProcess->lines_success}} </span> <span>  из</span><span id="lines_count"> {{$lastProcess->lines_count}}</span></p>
                                                 <p>Некритичных ошибок: <span id="lines_error"> {{$lastProcess->lines_error}}</span></p>
                                                 <p>Ссылка на лог ошибок: <a href="{{route('getLog')}}" >лог ошибок</a></p>
 
@@ -187,7 +187,7 @@
                                             type: "post",
                                             success: function (response) {
                                                 $('#lines_success').text(response.countSuccess);
-                                                $('#lines_error').text(response.countSuccess);
+                                                $('#lines_error').text(response.countError);
 
                                                 if(response.countSuccess + response.countSuccess === response.count ){
                                                     location.href='{{route('home')}}'
