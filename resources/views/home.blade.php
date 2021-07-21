@@ -136,7 +136,7 @@
                                         </div>
                                     @endif
                                <script>
-                                   setTimeout(() => window.location.reload(), 60000);
+                                   setTimeout(() => location.href='{{route('home')}}', 60000);
                                </script>
                                 <div class="row mt-5">
                                     <div class="col-12">
@@ -154,7 +154,7 @@
 
                                                     <button
                                                         type="submit"
-                                                        onclick="confirm('Вы уверены, что хотите прервать процесс?')"
+                                                        onclick="return confirm('Вы уверены, что хотите прервать процесс?')"
                                                         id="terminateProcessBtn" class="btn btn-sm btn-danger d-inline">
                                                         <i class="fa fa-minus-circle mr-2"></i>
                                                         прервать процесс
