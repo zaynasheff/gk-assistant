@@ -78,16 +78,24 @@ class HomeController extends Controller
             ]);
         }
 
+        try {
+            //заголовки
+            config(['excel.imports.csv.input_encoding' =>
+                    \PhpOffice\PhpSpreadsheet\Reader\Csv::guessEncoding($request->file('file'), 'Windows-1251')
+                ]
+            );
 
-        //заголовки
-        config(['excel.imports.csv.input_encoding' =>
-                \PhpOffice\PhpSpreadsheet\Reader\Csv::guessEncoding($request->file('file'), 'Windows-1251')
-            ]
-        );
+            $headings = (new HeadingRowImport)->toArray($request->file('file'))[0][0];
 
-        $headings = (new HeadingRowImport)->toArray($request->file('file'))[0][0];
+            FieldsMapper::map($headings);
+        }
+        catch (\Exception $e){
+            $message = $e->getMessage();
+            return redirect()->route('home',[
+                'message'=>$message
+            ]);
+        }
 
-        FieldsMapper::map($headings);
 
         //Изначальная валидация
 
@@ -196,6 +204,23 @@ class HomeController extends Controller
 
             return redirect()->route('home',[
                 'message'=>$message
+            ]);
+        }
+
+
+    }
+
+    public function getSuccessCount(){
+        $process = ProcessHistory::where('processing',1)->first();
+        if ($process){
+            $count = $process->lines_count;
+            $countSuccess = $process->lines_success;
+            $countError = $process->lines_error;
+
+            return response()->json([
+                'count'=>$count,
+                'countSuccess'=>$countSuccess,
+                'countError'=>$countError,
             ]);
         }
 
