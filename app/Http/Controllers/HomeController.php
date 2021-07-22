@@ -217,7 +217,7 @@ class HomeController extends Controller
             $count = $process->lines_count;
             $countSuccess = $process->lines_success;
             $countError = $process->lines_error;
-            $timeToFinish = Carbon::parse($process->process_end)->diffInHours(now());
+            $timeToFinish = Carbon::parse($process->process_end)->diff(now())->format('%H:%I:%S');
             return response()->json([
                 'count'=>$count,
                 'countSuccess'=>$countSuccess,
