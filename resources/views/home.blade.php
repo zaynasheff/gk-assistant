@@ -193,8 +193,8 @@
 
 
                                                 if(response.processing === 3){
-                                                   setTimeout(location.href='{{route('home')}}',1000);
-                                                    clearInterval( interval );
+                                                   setTimeout(location.href='{{route('home')}}',2000);
+                                                   clearInterval( interval );
                                                 }
 
                                             }
