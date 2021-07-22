@@ -188,7 +188,7 @@
                                                 if (response.processing === 1){
                                                     $('#lines_success').text(response.countSuccess);
                                                     $('#lines_error').text(response.countError);
-                                                    $('#time_to_finish').text(response.timeToFinish + ' часов');
+                                                    $('#time_to_finish').text(response.timeToFinish);
                                                     var percent = ((response.countSuccess/response.count)*100).toFixed(2);
                                                     $('#line_processed_percent').text(' ('+percent+'%)');
                                                 }
