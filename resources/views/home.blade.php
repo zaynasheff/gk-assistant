@@ -191,7 +191,7 @@
                                                 var percent = ((response.countSuccess/response.count)*100).toFixed(2);
                                                 $('#line_processed_percent').text(' ('+percent+'%)');
 
-                                                if(parseInt(response.countSuccess) + parseInt(response.countError) === parseInt(response.count - 2)){
+                                                if(response.processing === 3){
                                                     location.href='{{route('home')}}'
                                                 }
 

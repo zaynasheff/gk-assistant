@@ -221,8 +221,14 @@ class HomeController extends Controller
                 'count'=>$count,
                 'countSuccess'=>$countSuccess,
                 'countError'=>$countError,
+                'processing'=>1
             ]);
         }
+
+        return response()->json([
+                'processing'=>3
+            ]);
+
 
 
     }
