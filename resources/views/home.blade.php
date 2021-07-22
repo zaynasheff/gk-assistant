@@ -166,6 +166,8 @@
                                                 <p>Плановое время завершения: <span id="process_end"> {{$lastProcess->process_end}}</span></p>
                                                 <p>Тип сущности: <span id="entity_title"> {{$lastProcess->entity->title}}</span></p>
                                                 <p>Обработано: <span id="lines_success"> {{$lastProcess->lines_success}} </span> <span>  из</span><span id="lines_count"> {{$lastProcess->lines_count}}</span><span id="line_processed_percent"> ({{round(($lastProcess->lines_success/$lastProcess->lines_count)*100,2)}}%)</span></p>
+                                                <p>Время до окончания:
+                                                    <span id="time_to_finish"></span></p>
                                                 <p>Некритичных ошибок: <span id="lines_error"> {{$lastProcess->lines_error}}</span></p>
                                                 <p>Ссылка на лог ошибок: <a href="{{route('getLog')}}" >лог ошибок</a></p>
 
@@ -187,6 +189,7 @@
                                                 if (response.processing === 1){
                                                     $('#lines_success').text(response.countSuccess);
                                                     $('#lines_error').text(response.countError);
+                                                    $('#time_to_finish').text(response.timeToFinish);
                                                     var percent = ((response.countSuccess/response.count)*100).toFixed(2);
                                                     $('#line_processed_percent').text(' ('+percent+'%)');
                                                 }

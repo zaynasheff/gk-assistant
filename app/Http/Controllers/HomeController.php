@@ -7,6 +7,7 @@ use App\Imports\EntityDataImport;
 use App\Imports\FieldsMapper;
 use App\Models\B24FieldsDictionary;
 use App\Models\ProcessHistory;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Log;
@@ -216,12 +217,13 @@ class HomeController extends Controller
             $count = $process->lines_count;
             $countSuccess = $process->lines_success;
             $countError = $process->lines_error;
-
+            $timeToFinish = Carbon::parse($process->process_end)->diffInHours(now());
             return response()->json([
                 'count'=>$count,
                 'countSuccess'=>$countSuccess,
                 'countError'=>$countError,
-                'processing'=>1
+                'processing'=>1,
+                'timeToFinish'=>$timeToFinish
             ]);
         }
 
