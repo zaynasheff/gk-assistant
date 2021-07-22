@@ -135,9 +135,9 @@
                                             </div>
                                         </div>
                                     @endif
-                               <script>
-                                   setTimeout(() => location.href='{{route('home')}}', 60000);
-                               </script>
+{{--                               <script>--}}
+{{--                                   setTimeout(() => location.href='{{route('home')}}', 60000);--}}
+{{--                               </script>--}}
                                 <div class="row mt-5">
                                     <div class="col-12">
                                         <div class="card">
@@ -163,10 +163,9 @@
                                                 </div>
                                                 <hr>
                                                 <p>Время запуска: <span id="process_start"> {{$lastProcess->process_start}}</span></p>
-                                                <p>Время завершения: <span id="process_end"> {{$lastProcess->process_end}}</span></p>
+                                                <p>Плановое время завершения: <span id="process_end"> {{$lastProcess->process_end}}</span></p>
                                                 <p>Тип сущности: <span id="entity_title"> {{$lastProcess->entity->title}}</span></p>
-                                                <p>Строк в файле: <span id="lines_count"> {{$lastProcess->lines_count}}</span></p>
-                                                <p>Успешно обработано: <span id="lines_success"> {{$lastProcess->lines_success}}</span></p>
+                                                <p>Обработано: <span id="lines_success"> {{$lastProcess->lines_success}} </span> <span>  из</span><span id="lines_count"> {{$lastProcess->lines_count}}</span><span id="line_processed_percent"> ({{round(($lastProcess->lines_success/$lastProcess->lines_count)*100,2)}}%)</span></p>
                                                 <p>Некритичных ошибок: <span id="lines_error"> {{$lastProcess->lines_error}}</span></p>
                                                 <p>Ссылка на лог ошибок: <a href="{{route('getLog')}}" >лог ошибок</a></p>
 
@@ -174,6 +173,39 @@
                                         </div>
                                     </div>
                                 </div>
+                                <script>
+
+                                    $(document).ready(function(){
+                                        setInterval(getSuccessCount,1000);
+                                    });
+
+                                    function getSuccessCount(){
+
+
+                                        $.ajax({
+                                            url: "{{route('getSuccessCount')}}",
+                                            type: "post",
+                                            success: function (response) {
+                                                $('#lines_success').text(response.countSuccess);
+                                                $('#lines_error').text(response.countError);
+                                                var percent = ((response.countSuccess/response.count)*100).toFixed(2);
+                                                $('#line_processed_percent').text(' ('+percent+'%)');
+
+                                                if(response.processing === 3){
+                                                    location.href='{{route('home')}}'
+                                                }
+
+                                            }
+                                        });
+
+
+                                    }
+
+
+
+
+                                </script>
+
                             @endif
 
 
