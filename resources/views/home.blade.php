@@ -188,8 +188,8 @@
                                             success: function (response) {
                                                 $('#lines_success').text(response.countSuccess);
                                                 $('#lines_error').text(response.countError);
-                                                var percent = (response.countSuccess/response.count)*100;
-                                                $('#line_processed_percent').text('('+percent+')');
+                                                var percent = ((response.countSuccess/response.count)*100).toFixed(2);
+                                                $('#line_processed_percent').text('('+percent+'%)');
 
                                                 if(response.countSuccess + response.countSuccess === response.count ){
                                                     location.href='{{route('home')}}'
