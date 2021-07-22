@@ -175,24 +175,26 @@
                                 </div>
                                 <script>
 
-                                    $(document).ready(function(){
-                                        setInterval(getSuccessCount,1000);
-                                    });
+
+                                    var interval =  setInterval(getSuccessCount,1000);
 
                                     function getSuccessCount(){
-
 
                                         $.ajax({
                                             url: "{{route('getSuccessCount')}}",
                                             type: "post",
                                             success: function (response) {
-                                                $('#lines_success').text(response.countSuccess);
-                                                $('#lines_error').text(response.countError);
-                                                var percent = ((response.countSuccess/response.count)*100).toFixed(2);
-                                                $('#line_processed_percent').text(' ('+percent+'%)');
+                                                if (response.processing === 1){
+                                                    $('#lines_success').text(response.countSuccess);
+                                                    $('#lines_error').text(response.countError);
+                                                    var percent = ((response.countSuccess/response.count)*100).toFixed(2);
+                                                    $('#line_processed_percent').text(' ('+percent+'%)');
+                                                }
 
+                                                console.log(response);
                                                 if(response.processing === 3){
-                                                    location.href='{{route('home')}}'
+                                                    location.href='{{route('home')}}';
+                                                    clearInterval( interval );
                                                 }
 
                                             }
