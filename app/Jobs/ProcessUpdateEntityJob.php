@@ -78,7 +78,7 @@ class ProcessUpdateEntityJob implements ShouldQueue
 
         $this->entity_id = $entity_id;
         $this->data = $data;
-        $this->current_row_n = $current_row_n;
+        $this->current_row_n = $current_row_n + 1; // с учетом заголовка
         $this->b24ID = $data["ID"];
         $this->processHistory = $processHistory;
 
