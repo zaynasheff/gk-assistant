@@ -193,7 +193,7 @@
 
                                                 console.log(response);
                                                 if(response.processing === 3){
-                                                    location.href='{{route('home')}}';
+                                                   setTimeout(location.href='{{route('home')}}',1000);
                                                     clearInterval( interval );
                                                 }
 
