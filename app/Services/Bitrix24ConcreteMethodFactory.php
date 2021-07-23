@@ -42,7 +42,7 @@ class Bitrix24ConcreteMethodFactory {
             case Entity::CONTACT_ENTITY_ID:
                 return  $this->bitrix24API->getContact(...$data);
 
-            default: throw new Exception($this->entity_id . ' - некоррктный тип сущности');
+            default: throw new \LogicException($this->entity_id . ' - некорректный тип сущности');
         }
     }
 
@@ -62,7 +62,7 @@ class Bitrix24ConcreteMethodFactory {
             case Entity::CONTACT_ENTITY_ID:
                 return  $this->bitrix24API->updateContact(...$data);
 
-            default: throw new Exception($this->entity_id . ' - некоррктный тип сущности');
+            default: throw new \LogicException($this->entity_id . ' - некорректный тип сущности');
         }
     }
 

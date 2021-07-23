@@ -3,21 +3,18 @@
 namespace App\Jobs;
 
 use App\Bitrix24\Bitrix24API;
-use App\Interfaces\ProcessingImportIF;
-use App\Models\B24CustomFields;
-use App\Models\B24FieldsDictionary;
+use App\Bitrix24\Bitrix24APIException;
+use App\Exceptions\Validate2LevelException;
 use App\Models\ProcessHistory;
-use App\Models\Entity;
+use App\Services\Bitrix24ConcreteMethodFactory;
 use App\Services\Validate2Level;
+use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Collection;
-use Exception;
 use Illuminate\Support\Facades\Log;
-use App\Services\Bitrix24ConcreteMethodFactory;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Storage;
 
@@ -49,13 +46,13 @@ class ProcessUpdateEntityJob implements ShouldQueue
      *
      * @var int
      */
-    public $maxExceptions = 3;
+    public $maxExceptions = 1;
     /**
      * The number of times the job may be attempted.
      *
      * @var int
      */
-    public $tries = 3;
+    public $tries = 1;
     private $data;
     private $entity_id;
 
@@ -96,8 +93,8 @@ class ProcessUpdateEntityJob implements ShouldQueue
         //$this->process = $process;
         //$this->b24 = $bitrix24API;
 
-        Redis::throttle('key')->block(0)->allow(60)->every(60)->then(function ()  {
-           // info('Lock obtained...');
+        Redis::throttle('key')->block(0)->allow(60)->every(60)->then(function () {
+            // info('Lock obtained...');
             $this->doTheJob();
 
         }, function () {
@@ -126,7 +123,7 @@ class ProcessUpdateEntityJob implements ShouldQueue
 
         try {
             //$entityName = $this->validateEntity();
-            $b24MethodFactory = new Bitrix24ConcreteMethodFactory($this->entity_id) ; //$bitrix24API);
+            $b24MethodFactory = new Bitrix24ConcreteMethodFactory($this->entity_id); //$bitrix24API);
             $b24Entity = $b24MethodFactory->GetOne($this->b24ID);
 
             $b24MethodFactory->UpdateOne($this->b24ID,
@@ -137,27 +134,39 @@ class ProcessUpdateEntityJob implements ShouldQueue
             Log::channel('ext_debug')->debug("increment lines_success:" . $process->lines_success);
 
 
-
-        } catch (\Exception $e) {
+        } catch (Validate2LevelException $e) {
             // Если одна из проверок возвратила ошибку, то пишем ее в файл лога в одну строку формате:
             // Номер_строки | Номер_столбца | IDсущности | Описание_ошибки
             //  Пример: 12312 ABX ID321321 поле “Сумма сделки” пусто
 
-            $error = 'Номер строки:' . $this->current_row_n . "|" . $e->getMessage()  ; //. ";файл:" . $e->getFile() . ";строка:" . $e->getLine();
-            Log::channel('ext_debug')->debug("validator exception:" .  $error);
+            $error = 'Номер строки:' . $this->current_row_n . "|" . $e->getMessage(); //. ";файл:" . $e->getFile() . ";строка:" . $e->getLine();
             Storage::disk('log')->append('update.log', $error);
             $process->increment('lines_error');
+            Log::channel('ext_debug')->debug("increment lines_error:" . $process->lines_error);
+
+        } catch (Bitrix24APIException $e) {
+            $error = 'Номер строки:' . $this->current_row_n . "| Номер столбца: -| ID сущности: " . $this->b24ID . "| Описание ошибки при обращении в Б24:" . $e->getMessage();
+            Storage::disk('log')->append('update.log', $error);
+            $process->increment('lines_error');
+            Log::channel('ext_debug')->debug("b24 exception:" . $error . ";файл:" . $e->getFile() . ";строка:" . $e->getLine() );
+            Log::channel('ext_debug')->debug("increment lines_error:" . $process->lines_error);
+
+        } catch (\Exception $e) {
+
+            $error = 'Номер строки:' . $this->current_row_n . "| Номер столбца: -| ID сущности: " . $this->b24ID . "| Описание необрабатываемой ошибки:" . $e->getMessage();
+            Storage::disk('log')->append('update.log', $error);
+            $process->increment('lines_error');
+            Log::channel('ext_debug')->debug("unprocessed exception:" . $error . ";файл:" . $e->getFile() . ";строка:" . $e->getLine() );
             Log::channel('ext_debug')->debug("increment lines_error:" . $process->lines_error);
 
         }
 
 
-
-        if($this->current_row_n >= $process->lines_count ) {
+        if ($this->current_row_n >= $process->lines_count) {
             $process->processing = 3;
             $process->process_end = now()->toDateTimeString();
             $process->save();
-            Log::channel('ext_debug')->debug("finish ProcessUpdateEntityJob:"  ,
+            Log::channel('ext_debug')->debug("finish ProcessUpdateEntityJob:",
                 [
                     'current_row_n' => $this->current_row_n,
                 ]
@@ -165,11 +174,11 @@ class ProcessUpdateEntityJob implements ShouldQueue
 
         }
 
-        if($error) {
+/*        if ($error) {
             // чтобы повторить попытку из очереди нужно выкинуть экс так или иначе
             // попыток у нас нет, но по крайней мере увидим что-то в failed_jobs
             throw new Exception($error);
-        }
+        }*/
 
 
     }

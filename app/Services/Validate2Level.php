@@ -4,6 +4,7 @@
 namespace App\Services;
 
 
+use App\Exceptions\Validate2LevelException;
 use App\Helpers\ExcelHelper;
 use App\Models\B24CustomFields;
 use App\Models\B24FieldsDictionary;
@@ -17,8 +18,10 @@ class Validate2Level
 
     /**
      * @param array $data
+     * @param int $entity_id
+     * @param array $b24Entity
      * @return  Collection
-     * @throws Exception
+     * @throws Validate2LevelException
      */
     public static function validateData(array $data, int $entity_id, array $b24Entity): Collection
     {
@@ -33,12 +36,12 @@ class Validate2Level
             //пустое значение для поля, которое должно быть обязательным к заполнению;
             if (optional($config)->required && empty(trim($value))
             && !self::isNotAnException($config) )
-                throw new Exception("Номер столбца:" . ExcelHelper::getNameFromNumber($key+1) . "| ID сущности:" . $data["ID"] . "| Описание ошибки:" . $config->title . ' - обязательное поле');
+                throw new Validate2LevelException("Номер столбца:" . ExcelHelper::getNameFromNumber($key+1) . "| ID сущности:" . $data["ID"] . "| Описание ошибки:" . $config->title . ' - обязательное поле');
             if(!empty(trim($value))) {
                 //несоответствие типов - содержимое ячейки не соответствует по типу полю сущности, с которым она ассоциирована;
                 switch (optional($config)->field_type) {
                     case 'integer' :
-                        if (!is_numeric($value)) throw new Exception("Номер столбца:" . ExcelHelper::getNameFromNumber($key+1) . "| ID сущности:" . $data["ID"] . "| Описание ошибки:" . $this->entity->id . "|" . 'Поле ' . $key . ' не соотвестввует типу integer');
+                        if (!is_numeric($value)) throw new Validate2LevelException("Номер столбца:" . ExcelHelper::getNameFromNumber($key+1) . "| ID сущности:" . $data["ID"] . "| Описание ошибки:" . $this->entity->id . "|" . 'Поле ' . $key . ' не соотвестввует типу integer');
 
                         unset($data[$key]);
                         $data[$config->field_code] = $value;
@@ -49,17 +52,17 @@ class Validate2Level
                         break;
                     case 'boolean' :
 
-                        if (!is_bool($value)) throw new Exception("Номер столбца:" . ExcelHelper::getNameFromNumber($key+1) . "| ID сущности:" . $data["ID"]  . "| Описание ошибки:" . 'Поле ' . $key . ' не соотвестввует типу boolean');
+                        if (!is_bool($value)) throw new Validate2LevelException("Номер столбца:" . ExcelHelper::getNameFromNumber($key+1) . "| ID сущности:" . $data["ID"]  . "| Описание ошибки:" . 'Поле ' . $key . ' не соотвестввует типу boolean');
                         unset($data[$key]);
                         $data[$config->field_code] = $value;
                         break;
                     case 'double' :
-                        if (!is_numeric($value)) throw new Exception("Номер столбца:" . ExcelHelper::getNameFromNumber($key+1) . "| ID сущности:" . $data["ID"]  . "| Описание ошибки:" . 'Поле ' . $key . ' не соотвестввует типу double');
+                        if (!is_numeric($value)) throw new Validate2LevelException("Номер столбца:" . ExcelHelper::getNameFromNumber($key+1) . "| ID сущности:" . $data["ID"]  . "| Описание ошибки:" . 'Поле ' . $key . ' не соотвестввует типу double');
                         unset($data[$key]);
                         $data[$config->field_code] = $value;
                         break;
                     case 'datetime' :
-                        if (!strtotime($value)) throw new Exception("Номер столбца:" . ExcelHelper::getNameFromNumber($key+1) . "| ID сущности:" . $data["ID"]  . "| Описание ошибки:" . 'Поле ' . $key . ' не соотвестввует типу datetime');
+                        if (!strtotime($value)) throw new Validate2LevelException("Номер столбца:" . ExcelHelper::getNameFromNumber($key+1) . "| ID сущности:" . $data["ID"]  . "| Описание ошибки:" . 'Поле ' . $key . ' не соотвестввует типу datetime');
                         unset($data[$key]);
                         $data[$config->field_code] = $value;
                         break;
