@@ -33,7 +33,7 @@
                                   <div class="row">
                                       <div class="col-12">
                                           <div class="alert alert-danger mb-5">
-                                              {{request('message')}}
+                                              {!! request('message') !!}
                                           </div>
                                       </div>
                                   </div>
@@ -130,7 +130,7 @@
                                         <div class="row">
                                             <div class="col-12">
                                                 <div class="alert alert-danger mb-5">
-                                                    {{request('message')}}
+                                                    {!! request('message') !!}
                                                 </div>
                                             </div>
                                         </div>

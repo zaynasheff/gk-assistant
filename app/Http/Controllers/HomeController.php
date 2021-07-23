@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 
+use App\Helpers\ExcelHelper;
 use App\Imports\EntityDataImport;
 use App\Imports\FieldsMapper;
 use App\Models\B24FieldsDictionary;
@@ -114,13 +115,15 @@ class HomeController extends Controller
             $message = 'Процесс не запущен! Отсутствие ячейки со значением ID';
 
         }
-        //совпадение значений любых двух ячеек
+        //совпадение значений любых двух столбцов
         if (count($headings) !== count(array_unique($headings))) {
 
             $errors = true;
-            $message = 'Процесс не запущен! Совпадение значений двух названий столбоцов';
+            $message = 'Процесс не запущен! Совпадение значений двух названий столбцов';
 
         }
+
+
 
         //отсутствие в выбранной сущности Битрикс полей с названием, равным значению ячейки
         $b24fields = B24FieldsDictionary::where('entity_id', $request->entity_id)->pluck('title')->toArray();
@@ -138,8 +141,10 @@ class HomeController extends Controller
 
         //пустое значение ячейки, если хотя бы в одной ячейке в любой строке данного столбца есть непустое значение
         if (in_array(null, $headings)) {
+
+            $keyHeading = array_search(null, $headings) + 1;
             $errors = true;
-            $message = 'Процесс не запущен! Пустое значение в заголовке';
+            $message = 'Процесс не запущен! Пустое значение в заголовке,столбец&nbsp;&nbsp;'.  $keyHeading;
 
         }
         //наличие в сущности битрикс более одного поля с с названием, равным значению ячейки
@@ -147,7 +152,7 @@ class HomeController extends Controller
             return $item > 1 && in_array($key, $headings);
         })) {
             $errors = true;
-            $message = 'Процесс не запущен! Наличие в сущности битрикс более одного поля с одним названием: ' . $doubled;
+            $message = 'Процесс не запущен! Наличие в сущности битрикс '.$entity->title.'  более одного поля с одним названием: ' . $doubled;
         }
 
 
