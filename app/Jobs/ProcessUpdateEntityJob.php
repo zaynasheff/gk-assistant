@@ -156,7 +156,7 @@ class ProcessUpdateEntityJob implements ShouldQueue
             $error = 'Номер строки:' . $this->current_row_n . "| Номер столбца: -| ID сущности: " . $this->b24ID . "| Описание необрабатываемой ошибки:" . $e->getMessage();
             Storage::disk('log')->append('update.log', $error);
             $process->increment('lines_error');
-            Log::channel('ext_debug')->debug("unprocessed exception:" . $error . ";файл:" . $e->getFile() . ";строка:" . $e->getLine() );
+            Log::channel('ext_debug')->debug("unprocessed exception:" . $error . ";файл:" . $e->getFile() . ";строка:" . $e->getLine() . ";трейс:" . $e->getTraceAsString() );
             Log::channel('ext_debug')->debug("increment lines_error:" . $process->lines_error);
 
         }
