@@ -116,10 +116,13 @@ class HomeController extends Controller
 
         }
         //совпадение значений любых двух столбцов
-        if (count($headings) !== count(array_unique($headings))) {
+        if ( $doubled = collect($headings)->countBy()->search(function ($item) {
+            return $item > 1 ;
+        }))
+        {
 
             $errors = true;
-            $message = 'Процесс не запущен! Совпадение значений двух названий столбцов';
+            $message = 'Процесс не запущен! Совпадение значений двух названий столбцов:' . $doubled;
 
         }
 
