@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 use App\Imports\EntityDataImport;
 use App\Imports\FieldsMapper;
 use App\Models\B24FieldsDictionary;
+use App\Models\Entity;
 use App\Models\ProcessHistory;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -80,6 +81,10 @@ class HomeController extends Controller
         }
 
         try {
+
+            //сущность для сообщений
+            $entity = Entity::findOrFail($request->entity_id);
+
             //заголовки
             config(['excel.imports.csv.input_encoding' =>
                     \PhpOffice\PhpSpreadsheet\Reader\Csv::guessEncoding($request->file('file'), 'Windows-1251')
@@ -125,7 +130,8 @@ class HomeController extends Controller
 
         if (count($diffFields) > 0) {
             $errors = true;
-            $message = 'Процесс не запущен! Отсутствие в выбранной сущности Битрикс полей: ' . implode(', ', $diffFields);
+            $message = 'Процесс не запущен! В выбранной вами сущности '.$entity->title .
+                ' нет указанных в файле ' .$request->get('file'). ' полей: '.implode(', ', $diffFields);
         }
 
         //пустое значение ячейки, если хотя бы в одной ячейке в любой строке данного столбца есть непустое значение
