@@ -131,7 +131,9 @@ class HomeController extends Controller
         if (count($diffFields) > 0) {
             $errors = true;
             $message = 'Процесс не запущен! В выбранной вами сущности '.$entity->title .
-                ' нет указанных в файле ' .$request->get('file'). ' полей: '.implode(', ', $diffFields);
+                ' нет указанных в файле ' .
+                $request->file('file')->getClientOriginalName().
+                ' полей: '.implode(', ', $diffFields);
         }
 
         //пустое значение ячейки, если хотя бы в одной ячейке в любой строке данного столбца есть непустое значение
