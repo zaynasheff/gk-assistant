@@ -42,7 +42,7 @@ class Validate2Level
                 //несоответствие типов - содержимое ячейки не соответствует по типу полю сущности, с которым она ассоциирована;
                 switch (optional($config)->field_type) {
                     case 'integer' :
-                        if (!is_numeric($value)) throw new Validate2LevelException("Номер столбца:" . ExcelHelper::getNameFromNumber($index) . "| ID сущности:" . $data["ID"] . "| Описание ошибки:" . $this->entity->id . "|" . 'Поле ' . $key . ' не соотвестввует типу integer');
+                        if (!is_numeric($value)) throw new Validate2LevelException("Номер столбца:" . ExcelHelper::getNameFromNumber($index) . "| ID сущности:" . $data["ID"] . "| Описание ошибки:" . 'Поле ' . $key . ' не соответствует типу integer');
 
                         unset($data[$key]);
                         $data[$config->field_code] = $value;
@@ -53,17 +53,17 @@ class Validate2Level
                         break;
                     case 'boolean' :
 
-                        if (!is_bool($value)) throw new Validate2LevelException("Номер столбца:" . ExcelHelper::getNameFromNumber($index) . "| ID сущности:" . $data["ID"]  . "| Описание ошибки:" . 'Поле ' . $key . ' не соотвестввует типу boolean');
+                        if (!is_bool($value)) throw new Validate2LevelException("Номер столбца:" . ExcelHelper::getNameFromNumber($index) . "| ID сущности:" . $data["ID"]  . "| Описание ошибки:" . 'Поле ' . $key . ' не соответствует типу boolean');
                         unset($data[$key]);
                         $data[$config->field_code] = $value;
                         break;
                     case 'double' :
-                        if (!is_numeric($value)) throw new Validate2LevelException("Номер столбца:" . ExcelHelper::getNameFromNumber($index) . "| ID сущности:" . $data["ID"]  . "| Описание ошибки:" . 'Поле ' . $key . ' не соотвестввует типу double');
+                        if (!is_numeric($value)) throw new Validate2LevelException("Номер столбца:" . ExcelHelper::getNameFromNumber($index) . "| ID сущности:" . $data["ID"]  . "| Описание ошибки:" . 'Поле ' . $key . ' не соответствует типу double');
                         unset($data[$key]);
                         $data[$config->field_code] = $value;
                         break;
                     case 'datetime' :
-                        if (!strtotime($value)) throw new Validate2LevelException("Номер столбца:" . ExcelHelper::getNameFromNumber($index) . "| ID сущности:" . $data["ID"]  . "| Описание ошибки:" . 'Поле ' . $key . ' не соотвестввует типу datetime');
+                        if (!strtotime($value)) throw new Validate2LevelException("Номер столбца:" . ExcelHelper::getNameFromNumber($index) . "| ID сущности:" . $data["ID"]  . "| Описание ошибки:" . 'Поле ' . $key . ' не соответствует типу datetime');
                         unset($data[$key]);
                         $data[$config->field_code] = $value;
                         break;
