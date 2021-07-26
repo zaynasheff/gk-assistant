@@ -112,7 +112,7 @@ class HomeController extends Controller
 
         if (!in_array('ID', $headings)) {
             $errors = true;
-            $message = 'Процесс не запущен! Отсутствие ячейки со значением ID';
+            $message = 'Процесс не запущен! В заголовке отсутствует столбец со значением ID';
 
         }
         //совпадение значений любых двух столбцов
