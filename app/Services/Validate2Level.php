@@ -23,7 +23,7 @@ class Validate2Level
      */
     private $entity_id;
     /**
-     * @var array
+     * @var Collection
      */
     private $data;
     /**
@@ -31,7 +31,7 @@ class Validate2Level
      */
     private $row_n;
 
-    public function __construct($data, $entity_id, $row_n)
+    public function __construct(array $data, int $entity_id, int $row_n)
         {
             $this->data = collect($data);
             $this->entity_id = $entity_id;
@@ -63,34 +63,34 @@ class Validate2Level
                         if (!is_numeric($value)) throw new Validate2LevelException("Номер столбца:" . ExcelHelper::getNameFromNumber($index) . "| ID сущности:" . $this->data["ID"] . "| Описание ошибки:" . 'Поле ' . $key . ' не соответствует типу integer');
 
                         unset($this->data[$key]);
-                        $data[$config->field_code] = $value;
+                        $this->data[$config->field_code] = $value;
                         break;
                     case 'string' :
                         unset($this->data[$key]);
-                        $data[$config->field_code] = $value;
+                        $this->data[$config->field_code] = $value;
                         break;
                     case 'boolean' :
 
                         if (!is_bool($value)) throw new Validate2LevelException("Номер столбца:" . ExcelHelper::getNameFromNumber($index) . "| ID сущности:" . $this->data["ID"]  . "| Описание ошибки:" . 'Поле ' . $key . ' не соответствует типу boolean');
                         unset($this->data[$key]);
-                        $data[$config->field_code] = $value;
+                        $this->data[$config->field_code] = $value;
                         break;
                     case 'double' :
                         if (!is_numeric($value)) throw new Validate2LevelException("Номер столбца:" . ExcelHelper::getNameFromNumber($index) . "| ID сущности:" . $this->data["ID"]  . "| Описание ошибки:" . 'Поле ' . $key . ' не соответствует типу double');
                         unset($this->data[$key]);
-                        $data[$config->field_code] = $value;
+                        $this->data[$config->field_code] = $value;
                         break;
                     case 'datetime' :
                         if (!strtotime($value)) throw new Validate2LevelException("Номер столбца:" . ExcelHelper::getNameFromNumber($index) . "| ID сущности:" . $this->data["ID"]  . "| Описание ошибки:" . 'Поле ' . $key . ' не соответствует типу datetime');
                         unset($this->data[$key]);
-                        $data[$config->field_code] = $value;
+                        $this->data[$config->field_code] = $value;
                         break;
                     case 'enumeration' :
                         $b24CustomFields = new B24CustomFields(
                             json_decode($config->items, true)
                         );
                         unset($this->data[$key]);
-                        $data[$config->field_code] = $b24CustomFields->getEnumIdByValue($data[$key]);
+                        $this->data[$config->field_code] = $b24CustomFields->getEnumIdByValue($this->data[$key]);
                         break;
                     case 'crm_miltifield_child' :
                         $newData = explode(',', $value); // например два номера тел: 11111,22222
@@ -116,7 +116,7 @@ class Validate2Level
                             ];
                         }
 
-                        $data[$parentFieldName] = $_data;
+                        $this->data[$parentFieldName] = $_data;
 
                         break;
 

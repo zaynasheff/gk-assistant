@@ -129,10 +129,8 @@ class ProcessUpdateEntityJob implements ShouldQueue
             $b24MethodFactory = new Bitrix24ConcreteMethodFactory($this->entity_id); //$bitrix24API);
             $b24Entity = $b24MethodFactory->GetOne($this->b24ID);
 
-            $validated =  $validator->validateData($this->data, $this->entity_id, $b24Entity)->toArray();
-            dd(7777777777, $validated);
             $b24MethodFactory->UpdateOne($this->b24ID,
-                $validated
+                $validator->validateData($b24Entity)->toArray()
             );
 
             $process->increment('lines_success');
