@@ -122,7 +122,7 @@ class HomeController extends Controller
         {
 
             $errors = true;
-            $message = 'Процесс не запущен! Совпадение значений двух названий столбцов:' . $doubled;
+            $message = 'Процесс не запущен! Совпадение значений двух названий столбцов: ' . $doubled;
 
         }
 
@@ -147,7 +147,7 @@ class HomeController extends Controller
 
             $keyHeading = array_search(null, $headings) + 1;
             $errors = true;
-            $message = 'Процесс не запущен! Пустое значение в заголовке,столбец&nbsp;&nbsp;'.  $keyHeading;
+            $message = 'Процесс не запущен! Пустое значение в заголовке,&nbsp;столбец&nbsp;&nbsp;'.  $keyHeading;
 
         }
         //наличие в сущности битрикс более одного поля с с названием, равным значению ячейки
