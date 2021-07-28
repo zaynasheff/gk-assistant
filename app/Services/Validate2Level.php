@@ -5,7 +5,6 @@ namespace App\Services;
 
 
 use App\Exceptions\Validate2LevelException;
-use App\Helpers\ExcelHelper;
 use App\Models\B24CustomFields;
 use App\Models\B24FieldsDictionary;
 use Exception;
@@ -55,12 +54,12 @@ class Validate2Level
             //пустое значение для поля, которое должно быть обязательным к заполнению;
             if (optional($config)->required && empty(trim($value))
             && !$this->isNotAnException($config) )
-                throw new Validate2LevelException("Номер столбца:" . ExcelHelper::getNameFromNumber($index) . "| ID сущности:" . $this->data["ID"] . "| Описание ошибки:" . $config->title . ' - обязательное поле');
+                throw new Validate2LevelException("Номер столбца:" . $index . "| ID сущности:" . $this->data["ID"] . "| Описание ошибки:" . $config->title . ' - обязательное поле');
             if(!empty(trim($value))) {
                 //несоответствие типов - содержимое ячейки не соответствует по типу полю сущности, с которым она ассоциирована;
                 switch (optional($config)->field_type) {
                     case 'integer' :
-                        if (!is_numeric($value)) throw new Validate2LevelException("Номер столбца:" . ExcelHelper::getNameFromNumber($index) . "| ID сущности:" . $this->data["ID"] . "| Описание ошибки:" . 'Поле ' . $key . ' не соответствует типу integer');
+                        if (!is_numeric($value)) throw new Validate2LevelException("Номер столбца:" . $index . "| ID сущности:" . $this->data["ID"] . "| Описание ошибки:" . 'Поле ' . $key . ' не соответствует типу integer');
 
                         unset($this->data[$key]);
                         $this->data[$config->field_code] = $value;
@@ -71,17 +70,17 @@ class Validate2Level
                         break;
                     case 'boolean' :
 
-                        if (!is_bool($value)) throw new Validate2LevelException("Номер столбца:" . ExcelHelper::getNameFromNumber($index) . "| ID сущности:" . $this->data["ID"]  . "| Описание ошибки:" . 'Поле ' . $key . ' не соответствует типу boolean');
+                        if (!is_bool($value)) throw new Validate2LevelException("Номер столбца:" . $index . "| ID сущности:" . $this->data["ID"]  . "| Описание ошибки:" . 'Поле ' . $key . ' не соответствует типу boolean');
                         unset($this->data[$key]);
                         $this->data[$config->field_code] = $value;
                         break;
                     case 'double' :
-                        if (!is_numeric($value)) throw new Validate2LevelException("Номер столбца:" . ExcelHelper::getNameFromNumber($index) . "| ID сущности:" . $this->data["ID"]  . "| Описание ошибки:" . 'Поле ' . $key . ' не соответствует типу double');
+                        if (!is_numeric($value)) throw new Validate2LevelException("Номер столбца:" . $index . "| ID сущности:" . $this->data["ID"]  . "| Описание ошибки:" . 'Поле ' . $key . ' не соответствует типу double');
                         unset($this->data[$key]);
                         $this->data[$config->field_code] = $value;
                         break;
                     case 'datetime' :
-                        if (!strtotime($value)) throw new Validate2LevelException("Номер столбца:" . ExcelHelper::getNameFromNumber($index) . "| ID сущности:" . $this->data["ID"]  . "| Описание ошибки:" . 'Поле ' . $key . ' не соответствует типу datetime');
+                        if (!strtotime($value)) throw new Validate2LevelException("Номер столбца:" . $index . "| ID сущности:" . $this->data["ID"]  . "| Описание ошибки:" . 'Поле ' . $key . ' не соответствует типу datetime');
                         unset($this->data[$key]);
                         $this->data[$config->field_code] = $value;
                         break;
@@ -156,7 +155,8 @@ class Validate2Level
     public function validateID($b24ID)
     {
         if(!is_numeric($b24ID)) {
-            throw new Validate2LevelException("Номер столбца:" . ExcelHelper::getNameFromNumber($this->row_n) . "| ID сущности:" . $this->data["ID"]  . "| Описание ошибки:" . 'Поле ID не соответствует типу integer');
+            $index = $this->data->keys()->search("ID") + 1;
+            throw new Validate2LevelException("Номер столбца:" . (string)$index . "| ID сущности:" . $this->data["ID"]  . "| Описание ошибки:" . 'Поле ID не соответствует типу integer');
         }
     }
 
