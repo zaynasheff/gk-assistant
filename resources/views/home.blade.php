@@ -144,12 +144,12 @@
                                             <div class="card-body history-card">
                                                 <div id="titleContainer">
                                                     <h4 id="historyTitle" class="d-inline">Идет выполнение процесса...</h4>
-                                                    <button
+{{--                                                    <button
                                                         onclick="location.href='{{route('home')}}'"
                                                         class="btn btn-sm btn-success d-inline ml-3 mr-3">
                                                         <i class="fa fa-sync mr-2"></i>
                                                         обновить
-                                                    </button>
+                                                    </button>--}}
                                                     <form action="{{route('processTerminate')}}" method="POST" class="d-inline">
 
                                                     <button
