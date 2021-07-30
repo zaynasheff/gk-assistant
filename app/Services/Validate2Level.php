@@ -89,7 +89,7 @@ class Validate2Level
                             json_decode($config->items, true)
                         );
                         unset($this->data[$key]);
-                        $this->data[$config->field_code] = $b24CustomFields->getEnumIdByValue($this->data[$key]);
+                        $this->data[$config->field_code] = $b24CustomFields->getEnumIdByValue($value);
                         break;
                     case 'crm_miltifield_child' :
                         $newData = explode(',', $value); // например два номера тел: 11111,22222
