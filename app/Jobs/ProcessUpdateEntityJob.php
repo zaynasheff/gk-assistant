@@ -5,6 +5,7 @@ namespace App\Jobs;
 use App\Bitrix24\Bitrix24API;
 use App\Bitrix24\Bitrix24APIException;
 use App\Exceptions\Validate2LevelException;
+use App\Models\B24FieldsDictionary;
 use App\Models\ProcessHistory;
 use App\Services\Bitrix24ConcreteMethodFactory;
 use App\Services\Validate2Level;
@@ -126,11 +127,18 @@ class ProcessUpdateEntityJob implements ShouldQueue
             $validator = new Validate2Level($this->data, $this->entity_id, $this->current_row_n);
             $validator->validateID($this->b24ID);
 
+            $fields_config = B24FieldsDictionary::where('entity_id', $this->entity_id)->get();
             $b24MethodFactory = new Bitrix24ConcreteMethodFactory($this->entity_id); //$bitrix24API);
-            $b24Entity = $b24MethodFactory->GetOne($this->b24ID);
+
+            // нужно взять сущность , в случае если мы будем работать с miltifield
+            $b24Entity =  $fields_config->whereIn('title', array_keys($this->data) )
+                ->whereIn('field_type', ['crm_miltifield_child', 'crm_multifield'])
+                ->IsnotEmpty()
+                ? $b24MethodFactory->GetOne($this->b24ID)
+                : [];
 
             $b24MethodFactory->UpdateOne($this->b24ID,
-                $validator->validateData($b24Entity)->toArray()
+                $validator->validateData($b24Entity, $fields_config)->toArray()
             );
 
             $process->increment('lines_success');

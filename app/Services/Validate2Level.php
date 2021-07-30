@@ -42,11 +42,9 @@ class Validate2Level
      * @return  Collection
      * @throws Validate2LevelException
      */
-    public function validateData(array $b24Entity): Collection
+    public function validateData(array $b24Entity, Collection $fields_config): Collection
     {
         Log::channel('ext_debug')->debug("start validating. ");
-
-        $fields_config = B24FieldsDictionary::where('entity_id', $this->entity_id)->get();
 
         $this->data->each(function ($value, $key) use ($b24Entity, $fields_config) {
             $index = $this->data->keys()->search($key) + 1;
