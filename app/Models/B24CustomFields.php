@@ -66,19 +66,15 @@ class B24CustomFields
     }
 
 
-    public function getEnumItems() : array
+    public function getItems() : array
     {
-        if (optional($this->fields)["type"] != "enumeration")
-            throw new \Exception('getEnumValueById поле - не является enum типом');
-
-        return (array)$this->fields['items'];
-
+        return (array)optional($this->fields)['items'];
     }
 
     public function getEnumIds() : array
     {
         return collect(
-            $this->getEnumItems()
+            $this->getItems()
         )->pluck("ID")
             ->toArray();
 
@@ -90,12 +86,16 @@ class B24CustomFields
             : explode(",", $values);
 
         return collect(
-            $this->getEnumItems()
+            $this->getItems()
         )->whereIn("VALUE", $values)
             ->pluck("ID")
             ->toArray();
 
     }
 
+    public function isMultiple()  : bool
+    {
+        return (bool)optional($this->fields)["isMultiple"];
 
+    }
 }

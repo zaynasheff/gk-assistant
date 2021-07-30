@@ -57,6 +57,10 @@ class Validate2Level
             && !$this->isNotAnException($config) )
                 throw new Validate2LevelException("Номер столбца:" . $index . "| ID сущности:" . $this->data["ID"] . "| Описание ошибки:" . $config->title . ' - обязательное поле');
             if(!empty(trim($value))) {
+
+                $b24CustomField = new B24CustomFields(
+                    json_decode($config->items, true)
+                );
                 //несоответствие типов - содержимое ячейки не соответствует по типу полю сущности, с которым она ассоциирована;
                 switch (optional($config)->field_type) {
                     case 'integer' :
@@ -79,7 +83,7 @@ class Validate2Level
                     case 'double' :
                         if (!is_numeric($value)) throw new Validate2LevelException("Номер столбца:" . $index . "| ID сущности:" . $this->data["ID"]  . "| Описание ошибки:" . 'Поле ' . $key . ' не соответствует типу double');
                         unset($this->data[$key]);
-                        $this->data[$config->field_code] = $value;
+                        $this->data[$config->field_code] = $b24CustomField->isMultiple() ? (array)$value : $value;
                         break;
                     case 'datetime' :
                         if (!strtotime($value)) throw new Validate2LevelException("Номер столбца:" . $index . "| ID сущности:" . $this->data["ID"]  . "| Описание ошибки:" . 'Поле ' . $key . ' не соответствует типу datetime');
@@ -89,11 +93,7 @@ class Validate2Level
                     case 'enumeration' :
                         unset($this->data[$key]);
 
-                        $b24CustomFields = new B24CustomFields(
-                            json_decode($config->items, true)
-                        );
-
-                        $this->data[$config->field_code] = $b24CustomFields->getEnumIdsByValues($value);
+                        $this->data[$config->field_code] = $b24CustomField->getEnumIdsByValues($value) ; //?? ["n0"];
                         break;
 
                     case 'crm_miltifield_child' :
