@@ -64,4 +64,38 @@ class B24CustomFields
                 ->pluck("ID")
                 ->first();
     }
+
+
+    public function getEnumItems() : array
+    {
+        if (optional($this->fields)["type"] != "enumeration")
+            throw new \Exception('getEnumValueById поле - не является enum типом');
+
+        return (array)$this->fields['items'];
+
+    }
+
+    public function getEnumIds() : array
+    {
+        return collect(
+            $this->getEnumItems()
+        )->pluck("ID")
+            ->toArray();
+
+    }
+    public function getEnumIdsByValues($values) : array
+    {
+        $values = is_array($values)
+            ? $values
+            : explode(",", $values);
+
+        return collect(
+            $this->getEnumItems()
+        )->whereIn("VALUE", $values)
+            ->pluck("ID")
+            ->toArray();
+
+    }
+
+
 }
