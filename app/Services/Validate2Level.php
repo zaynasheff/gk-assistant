@@ -41,6 +41,7 @@ class Validate2Level
      * @param array $b24Entity
      * @return  Collection
      * @throws Validate2LevelException
+     * TODO refactor to smth more appropriate, e.g laravel validation
      */
     public function validateData(array $b24Entity): Collection
     {
@@ -70,7 +71,8 @@ class Validate2Level
                         break;
                     case 'boolean' :
 
-                        if (!is_bool($value)) throw new Validate2LevelException("Номер столбца:" . $index . "| ID сущности:" . $this->data["ID"]  . "| Описание ошибки:" . 'Поле ' . $key . ' не соответствует типу boolean');
+                       // if (!is_bool($value))
+                        if($value!= "Нет" && $value!= "Да" ) throw new Validate2LevelException("Номер столбца:" . $index . "| ID сущности:" . $this->data["ID"]  . "| Описание ошибки:" . 'Поле ' . $key . ' не соответствует типу boolean');
                         unset($this->data[$key]);
                         $this->data[$config->field_code] = $value;
                         break;
