@@ -5,7 +5,12 @@
     <title>Модуль массового редактирования полей</title>
 </head>
 <body>
-<div id="name">Модуль массового редактирования полей</div>
+@if(Request::is('/home'))
+    <div id="name">Модуль массового редактирования полей</div>
+@else
+    <div id="name">Приложение массового изменения полей доступно только для администраторов</div>
+@endif
+
 
 <script src="//api.bitrix24.com/api/v1/"></script>
 <script>
