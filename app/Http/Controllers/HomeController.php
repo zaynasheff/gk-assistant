@@ -194,6 +194,19 @@ class HomeController extends Controller
     public function getLog()
     {
 
+        echo Storage::disk('log')->get('update.log');
+
+
+        printf(
+            "<br><a href='%s'>Download</a>",  action([self::class, '__getLog'])
+        );
+
+
+    }
+
+    public function __getLog()
+    {
+
         return Storage::disk('log')->download('update.log');
 
     }

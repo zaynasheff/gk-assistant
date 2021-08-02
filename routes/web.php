@@ -36,5 +36,6 @@ Route::get('/', function () {
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 Route::post('/process_handler', [App\Http\Controllers\HomeController::class, 'processHandler'])->name('processHandler');
 Route::get('/get_log', [App\Http\Controllers\HomeController::class, 'getLog'])->name('getLog');
+Route::get('/__get_log', [App\Http\Controllers\HomeController::class, '__getLog'])->name('__getLog');
 Route::post('/process_terminate', [App\Http\Controllers\HomeController::class, 'processTerminate'])->name('processTerminate');
 Route::post('/get_success_count', [App\Http\Controllers\HomeController::class, 'getSuccessCount'])->name('getSuccessCount');
