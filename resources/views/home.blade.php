@@ -108,7 +108,7 @@
                                                 <p>Строк в файле: <span id="lines_count"> {{$lastProcess->lines_count}}</span></p>
                                                 <p>Успешно обработано: <span id="lines_success"> {{$lastProcess->lines_success}}</span></p>
                                                 <p>Некритичных ошибок: <span id="lines_error"> {{$lastProcess->lines_error}}</span></p>
-                                                <p>Ссылка на лог ошибок: <a href="{{route('getLog')}}">лог ошибок</a></p>
+                                                <p>Ссылка на лог ошибок: <a target="_blank" href="{{route('getLog')}}">лог ошибок</a></p>
                                                 @else
                                                 <p>Процессы не найдены</p>
                                                 @endif
