@@ -8,6 +8,7 @@ use App\Models\B24FieldsDictionary;
 use App\Models\Entity;
 use Exception;
 use Illuminate\Console\Command;
+use Illuminate\Support\Collection;
 
 
 class UpdateDicts extends Command
@@ -56,22 +57,26 @@ class UpdateDicts extends Command
            // dd($this->b24->getCompany(1015));
            // dd($this->b24->getDealFields());
 
-            collect($this->b24->getDealFields())->each(function ($item, $key) {
-                $this->updateDict($key, Entity::DEAL_ENTITY_ID, $item);
-            });
-
-            collect($this->b24->getLeadFields())->each(function ($item, $key) {
-
-                $this->updateDict($key, Entity::LEAD_ENTITY_ID, $item);
-            });
-
-            collect($this->b24->getContactFields())->each(function ($item, $key) {
-                $this->updateDict($key, Entity::CONTACT_ENTITY_ID, $item);
-            });
-
-            collect($this->b24->getCompanyFields())->each(function ($item, $key) {
-                $this->updateDict($key, Entity::COMPANY_ENTITY_ID, $item);
-            });
+            $this->updateDict(
+                collect($this->b24->getDealFields())->transformEntityFields(
+                    Entity::DEAL_ENTITY_ID
+                ), Entity::DEAL_ENTITY_ID
+            );
+            $this->updateDict(
+                collect($this->b24->getLeadFields())->transformEntityFields(
+                    Entity::LEAD_ENTITY_ID
+                ), Entity::LEAD_ENTITY_ID
+            );
+            $this->updateDict(
+                collect($this->b24->getContactFields())->transformEntityFields(
+                    Entity::CONTACT_ENTITY_ID
+                ), Entity::CONTACT_ENTITY_ID
+            );
+            $this->updateDict(
+                collect($this->b24->getCompanyFields())->transformEntityFields(
+                    Entity::COMPANY_ENTITY_ID
+                ), Entity::COMPANY_ENTITY_ID
+            );
 
 
 
@@ -85,19 +90,16 @@ class UpdateDicts extends Command
         return 0;
     }
 
-    private function updateDict($field_code, $entity_id, $dictItem)
+    private function updateDict(Collection $data, int $entity_id)
     {
 //UF_CRM_    listLabel
-        B24FieldsDictionary::updateOrCreate(
-            ['field_code' => $field_code, 'entity_id' => $entity_id],
-            [
-                'field_type' => $dictItem['type'],
-                'required' => $dictItem['isRequired'],
-                'title' => strpos( $field_code, "UF_CRM_") === 0
-                    ? $dictItem["listLabel"]
-                    : $dictItem['title'],
-                'items' => json_encode($dictItem)
-                //'forbidden_to_edit' => $dictItem['isReadOnly']
-            ]);
+        $updateTime = now()->toDateTimeString();
+
+        B24FieldsDictionary::upsert( $data->toArray(),
+            ['field_code', 'entity_id'],
+            ['field_type', 'required', 'title', 'items', 'field_type']);
+
+        B24FieldsDictionary::entityFieldsUpdatedBefore($updateTime, $entity_id)
+            ->delete();
     }
 }

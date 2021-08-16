@@ -10,6 +10,8 @@ use App\Models\ProcessHistory;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider;
 use Maatwebsite\Excel\Imports\HeadingRowFormatter;
+use Illuminate\Support\Collection;
+
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -30,6 +32,27 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+
+
+        Collection::macro('transformEntityFields', function ($entity_id) {
+
+            return $this->transform(function ($dictItem, $field_code) use($entity_id)  {
+
+                return [
+                    'entity_id' => $entity_id,
+                    'field_code' => $field_code,
+                    'field_type' => $dictItem['type'],
+                    'required' => $dictItem['isRequired'],
+                    'title' => strpos( $field_code, "UF_CRM_") === 0
+                        ? $dictItem["listLabel"]
+                        : $dictItem['title'],
+                    'items' => json_encode($dictItem)
+                ];
+            });
+        });
+
+
+
          $this->app->singleton(Bitrix24API::class, function($app, $params ) {
              $bx24 = new Bitrix24API('https://b24-82kpks.bitrix24.ru/rest/1/vhz2n4j86zw2d7a9/');
              $bx24->http->throttle = 2; // не чаще раза в пол сек
