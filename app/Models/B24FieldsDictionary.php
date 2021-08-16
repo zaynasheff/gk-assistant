@@ -16,7 +16,7 @@ class B24FieldsDictionary extends Model
 
     public function scopeEntityFieldsUpdatedBefore($query, $updateTime, $enity_id)
     {
-        return $query ->where('enity_id', $enity_id)
+        return $query ->where('entity_id', $enity_id)
                        ->where('field_type', '!=' , 'crm_miltifield_child')
                       ->where('updated_at', '<', $updateTime  )
                       ->where('created_at', '<', $updateTime );
