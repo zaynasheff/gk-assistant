@@ -139,7 +139,8 @@ class HomeController extends Controller
             $message = 'Процесс не запущен! В выбранной вами сущности '.$entity->title .
                 ' нет указанных в файле ' .
                 $request->file('file')->getClientOriginalName().
-                ' полей: '.implode(', ', $diffFields);
+                ' полей: '.implode(', ', $diffFields)
+            . '(если вы создали это поле недавно, подождите несколько минут перед запуском этого процесса)';
         }
 
         //пустое значение ячейки, если хотя бы в одной ячейке в любой строке данного столбца есть непустое значение
@@ -198,7 +199,7 @@ class HomeController extends Controller
 
 
         printf(
-            "<br><a href='%s'>Download</a>",  action([self::class, '__getLog'])
+            "<br><a href='%s'>Скачать</a>",  action([self::class, '__getLog'])
         );
 
 

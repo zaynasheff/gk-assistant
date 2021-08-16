@@ -16,18 +16,12 @@ use Illuminate\Support\Facades\Log;
  */
 class Validate2Level
 {
-    /**
-     * @var int
-     */
-    private $entity_id;
+
     /**
      * @var Collection
      */
     private $data;
-    /**
-     * @var int
-     */
-    private $row_n;
+
     /**
      * @var Collection
      */
@@ -36,12 +30,16 @@ class Validate2Level
      * @var array
      */
     private $b24Entity;
+    /**
+     * @var int
+     */
+    private $b24ID;
 
-    public function __construct(array $data, int $entity_id, int $row_n)
+    public function __construct(array $data)
     {
         $this->data = collect($data);
-        $this->entity_id = $entity_id;
-        $this->row_n = $row_n;
+        $this->b24ID = (int)$data["ID"];
+
     }
 
     /**
@@ -54,14 +52,14 @@ class Validate2Level
         $this->b24Entity = $b24Entity;
         Log::channel('ext_debug')->debug("start validating. ");
 
-        $this->data->each(function ($value, $key) use ($fields_config) {
+        $this->data->except(['ID'])->each(function ($value, $key) use ($fields_config) {
             $index = $this->data->keys()->search($key) + 1;
             $this->config = $fields_config->where('title', $key)->first();
             //пустое значение для поля, которое должно быть обязательным к заполнению;
             $value = trim($value);
             if (optional($this->config)->required && empty($value)
                 && !$this->isNotAnException($this->config))
-                throw new Validate2LevelException("Номер столбца:" . $index . "| ID сущности:" . $this->data["ID"] . "| Описание ошибки:" . $this->config->title . ' - обязательное поле');
+                throw new Validate2LevelException("Номер столбца:" . $index . "| ID сущности:" . $this->b24ID . "| Описание ошибки:" . $this->config->title . ' - обязательное поле');
             if (empty($value))    {
                 $this->data->forget($key);
                 Log::channel('ext_debug')->debug("skip empty column:", [$value, $key]);
@@ -104,7 +102,7 @@ class Validate2Level
     {
         throw new Validate2LevelException(
             sprintf('Номер столбца: %s | ID сущности: %s | Описание ошибки: Поле  %s не соответствует типу %s',
-                $col_ix, $this->data["ID"], $field_name, $field_type)
+                $col_ix, $this->b24ID, $field_name, $field_type)
         );
 
 
@@ -113,11 +111,11 @@ class Validate2Level
     /**
      * @throws Validate2LevelException
      */
-    public function validateID($b24ID)
+    public function validateID()
     {
-        if (!is_numeric($b24ID)) {
+        if (!is_numeric($this->b24ID)) {
             $index = $this->data->keys()->search("ID") + 1;
-            throw new Validate2LevelException("Номер столбца:" . (string)$index . "| ID сущности:" . $this->data["ID"] . "| Описание ошибки:" . 'Поле ID не соответствует типу integer');
+            throw new Validate2LevelException("Номер столбца:" . (string)$index . "| ID сущности:" . $this->b24ID . "| Описание ошибки:" . 'Поле ID не соответствует типу integer');
         }
     }
 

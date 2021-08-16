@@ -124,8 +124,8 @@ class ProcessUpdateEntityJob implements ShouldQueue
 
         try {
             //$entityName = $this->validateEntity();
-            $validator = new Validate2Level($this->data, $this->entity_id, $this->current_row_n);
-            $validator->validateID($this->b24ID);
+            $validator = new Validate2Level($this->data);
+            $validator->validateID();
 
             $b24MethodFactory = new Bitrix24ConcreteMethodFactory($this->entity_id); //$bitrix24API);
             $b24Entity = $b24MethodFactory->GetOne($this->b24ID);
