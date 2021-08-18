@@ -92,7 +92,7 @@ class Validate2Level
             }
             return true;
         }
-        return !is_numeric($value);
+        return is_numeric($value);
     }
 
     /**
