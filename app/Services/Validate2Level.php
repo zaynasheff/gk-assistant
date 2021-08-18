@@ -68,10 +68,11 @@ class Validate2Level
 
             if ($this->b24CustomField->isMultiple()) {
                 $value = array_map("trim", explode(",", $value));
+            } else {
+                $value = trim($value);
             }
 
             //пустое значение для поля, которое должно быть обязательным к заполнению;
-            $value = trim($value);
             if (optional($this->config)->required && empty($value)
                 && !$this->isNotAnException($this->config))
                 throw new Validate2LevelException("Номер столбца:" . $index . "| ID сущности:" . $this->b24ID . "| Описание ошибки:" . $this->config->title . ' - обязательное поле');
