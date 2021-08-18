@@ -34,6 +34,10 @@ class Validate2Level
      * @var int
      */
     private $b24ID;
+    /*
+     * @var B24CustomFields
+     */
+    private  $b24CustomField;
 
     public function __construct(array $data)
     {
@@ -53,8 +57,19 @@ class Validate2Level
         Log::channel('ext_debug')->debug("start validating. ");
 
         $this->data->except(['ID'])->each(function ($value, $key) use ($fields_config) {
+
+
             $index = $this->data->keys()->search($key) + 1;
             $this->config = $fields_config->where('title', $key)->first();
+
+            $this->b24CustomField = new B24CustomFields(
+                json_decode($this->config->items, true)
+            );
+
+            if ($this->b24CustomField->isMultiple()) {
+                $value = array_map("trim", explode(",", $value));
+            }
+
             //пустое значение для поля, которое должно быть обязательным к заполнению;
             $value = trim($value);
             if (optional($this->config)->required && empty($value)
@@ -88,7 +103,7 @@ class Validate2Level
     {
         if (is_array($value)) {
             foreach ($value as $val) {
-                if (!$this->validateNumeric($val)) return false;
+                if (!$this->validateNumeric((int)$val)) return false;
             }
             return true;
         }
@@ -124,16 +139,6 @@ class Validate2Level
      */
     private function __validate($value, $key, $index)
     {
-
-
-        $b24CustomField = new B24CustomFields(
-            json_decode($this->config->items, true)
-        );
-
-        if ($b24CustomField->isMultiple()) {
-            $value = array_map("trim", explode(",", $value));
-        }
-
         unset($this->data[$key]);
         //несоответствие типов - содержимое ячейки не соответствует по типу полю сущности, с которым она ассоциирована;
         switch (optional($this->config)->field_type) {
@@ -161,7 +166,7 @@ class Validate2Level
                 $this->data[$this->config->field_code] = $value;
                 break;
             case 'enumeration' :
-                $this->data[$this->config->field_code] = $b24CustomField->getEnumIdsByValues($value); //?? ["n0"];
+                $this->data[$this->config->field_code] = $this->b24CustomField->getEnumIdsByValues($value); //?? ["n0"];
                 break;
 
             case 'crm_miltifield_child' :
