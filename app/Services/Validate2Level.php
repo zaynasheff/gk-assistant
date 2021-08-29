@@ -7,6 +7,7 @@ namespace App\Services;
 use App\Exceptions\Validate2LevelException;
 use App\Models\B24CustomFields;
 use App\Models\B24FieldsDictionary;
+use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 
@@ -34,7 +35,7 @@ class Validate2Level
      * @var int
      */
     private $b24ID;
-    /*
+    /**
      * @var B24CustomFields
      */
     private  $b24CustomField;
@@ -70,15 +71,23 @@ class Validate2Level
                 $value = array_map("trim", explode(",", $value));
             } else {
                 $value = trim($value);
+
             }
 
             //пустое значение для поля, которое должно быть обязательным к заполнению;
             if (optional($this->config)->required && empty($value)
-                && !$this->isNotAnException($this->config))
-                throw new Validate2LevelException("Номер столбца:" . $index . "| ID сущности:" . $this->b24ID . "| Описание ошибки:" . $this->config->title . ' - обязательное поле');
+                && !$this->isNotAnException($this->config)) {
+                $this->throwCustomError($index, $this->config->title . ' - обязательное поле');
+            }
+
+            unset($this->data[$key]); // убираем лишнее, в б24 отправятся только служебн. ключи типа UF_CRM_.... (это дейстиве в принципе не обязательно)
+
             if (empty($value))    {
-                $this->data->forget($key);
-                Log::channel('ext_debug')->debug("skip empty column:", [$value, $key]);
+              //  $this->data->forget($key);
+               // Log::channel('ext_debug')->debug("skip empty column:", [$value, $key]);
+                Log::channel('ext_debug')->debug("empty value, NO validation :", [$value, $key]);
+                $this->data[$this->config->field_code] = $value;
+
             } else {
                 $this->__validate($value, $key, $index);
             }
@@ -104,7 +113,7 @@ class Validate2Level
     {
         if (is_array($value)) {
             foreach ($value as $val) {
-                if (!$this->validateNumeric((int)$val)) return false;
+                if (!$this->validateNumeric($val)) return false;
             }
             return true;
         }
@@ -114,7 +123,7 @@ class Validate2Level
     /**
      * @throws Validate2LevelException
      */
-    private function throw($col_ix, $field_name, $field_type)
+    private function throwTypeError($col_ix, $field_name, $field_type)
     {
         throw new Validate2LevelException(
             sprintf('Номер столбца: %s | ID сущности: %s | Описание ошибки: Поле  %s не соответствует типу %s',
@@ -123,6 +132,20 @@ class Validate2Level
 
 
     }
+
+    /**
+     * @throws Validate2LevelException
+     */
+    private function throwCustomError($col_ix, $msg)
+    {
+        throw new Validate2LevelException(
+            sprintf('Номер столбца: %s | ID сущности: %s | Описание ошибки: %s'  ,
+                $col_ix, $this->b24ID, $msg)
+        );
+
+
+    }
+
 
     /**
      * @throws Validate2LevelException
@@ -140,13 +163,13 @@ class Validate2Level
      */
     private function __validate($value, $key, $index)
     {
-        unset($this->data[$key]);
         //несоответствие типов - содержимое ячейки не соответствует по типу полю сущности, с которым она ассоциирована;
-        switch (optional($this->config)->field_type) {
+        $field_type = optional($this->config)->field_type;
+        switch ($field_type) {
             case 'integer' :
             case 'double' :
                 if (!$this->validateNumeric($value)) {
-                    $this->throw($index, $key, $this->config->field_type);
+                    $this->throwTypeError($index, $key, $this->config->field_type);
                 }
                 $this->data[$this->config->field_code] = $value;
                 break;
@@ -155,19 +178,38 @@ class Validate2Level
                 break;
             case 'boolean' :
                 // if (!is_bool($value))
-                if ($value != "Нет" && $value != "Да") {
-                    $this->throw($index, $key, $this->config->field_type);
+                if ($value != "Нет" && $value != "Да" && $value) {
+                    $this->throwTypeError($index, $key, $this->config->field_type);
                 }
-                $this->data[$this->config->field_code] = $value;
+                $this->data[$this->config->field_code] = $value == "Да" ? 1 : 0;
                 break;
             case 'datetime' :
-                if (is_array($value) || !strtotime($value)) {
-                    $this->throw($index, $key, $this->config->field_type);
+            case 'date' :
+                if (!$this->validateNumeric($value)) { // даты приходят числами из импорта
+                    $this->throwTypeError($index, $key, $this->config->field_type);
                 }
-                $this->data[$this->config->field_code] = $value;
+                $toDate = function($val) use($field_type) {
+                            $cb = \Carbon\Carbon::instance(\PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($val));
+                            return $field_type == 'datetime'
+                                ? $cb->format("d.m.yy h:i:s")
+                                : $cb->format("d.m.yy");
+                     };
+
+                $this->data[$this->config->field_code] = $this->b24CustomField->isMultiple()
+                    ? array_map( $toDate, $value)
+                    : $toDate($value) ;
                 break;
             case 'enumeration' :
-                $this->data[$this->config->field_code] = $this->b24CustomField->getEnumIdsByValues($value); //?? ["n0"];
+                if(!$validEnumValArr = $this->b24CustomField->getEnumIdsByValues($value) )  // //?? ["n0"];
+                {
+                    $this->throwCustomError($index,   sprintf('недопустимое значение поля "%s"' , $this->config->title) );
+                }
+                if($this->b24CustomField->isMultiple() && count($value)!=count($validEnumValArr))
+                {
+                    $this->throwCustomError($index,   sprintf('одно из значений поля "%s" является недопустимым' , $this->config->title) );
+                }
+
+                $this->data[$this->config->field_code] = $validEnumValArr;
                 break;
 
             case 'crm_miltifield_child' :

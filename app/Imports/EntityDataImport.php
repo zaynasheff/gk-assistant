@@ -13,12 +13,13 @@ use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Imports\HeadingRowFormatter;
 use Maatwebsite\Excel\Concerns\SkipsEmptyRows;
+use Maatwebsite\Excel\Concerns\WithCalculatedFormulas;
 
 //HeadingRowFormatter::default('none');
 HeadingRowFormatter::default('format_b24_fields');
 
 
-class EntityDataImport implements ToCollection, WithHeadingRow, SkipsEmptyRows
+class EntityDataImport implements ToCollection, WithHeadingRow, SkipsEmptyRows, WithCalculatedFormulas
 {
 
 

@@ -128,13 +128,10 @@ class ProcessUpdateEntityJob implements ShouldQueue
             $validator->validateID();
 
             $b24MethodFactory = new Bitrix24ConcreteMethodFactory($this->entity_id); //$bitrix24API);
-            $b24Entity = $b24MethodFactory->GetOne($this->b24ID);
-
 
             $fields_config = B24FieldsDictionary::where('entity_id', $this->entity_id)->get();
-            $b24MethodFactory = new Bitrix24ConcreteMethodFactory($this->entity_id); //$bitrix24API);
 
-            // нужно взять сущность , в случае если мы будем работать с miltifield
+            // нужно запросить сущность из б24, в случае если мы будем работать с miltifield
             $b24Entity =  $fields_config->whereIn('title', array_keys($this->data) )
                 ->whereIn('field_type', ['crm_miltifield_child', 'crm_multifield'])
                 ->IsnotEmpty()

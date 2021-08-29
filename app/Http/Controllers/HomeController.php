@@ -133,6 +133,7 @@ class HomeController extends Controller
         $b24fields_col = collect($b24fields);
 
         $diffFields = array_diff($headings, $b24fields);
+        // регистронезависимый вариант : array_udiff($headings, $b24fields, 'strcasecmp');
 
         if (count($diffFields) > 0) {
             $errors = true;
@@ -140,7 +141,8 @@ class HomeController extends Controller
                 ' нет указанных в файле ' .
                 $request->file('file')->getClientOriginalName().
                 ' полей: '.implode(', ', $diffFields)
-            . '(если вы создали это поле недавно, подождите несколько минут перед запуском этого процесса)';
+            . '(если вы создали это поле недавно, подождите несколько минут перед запуском этого процесса)'
+            . '. Обратите внимание: названия полей в файле должны быть в том же регистре, что и в CRM';
         }
 
         //пустое значение ячейки, если хотя бы в одной ячейке в любой строке данного столбца есть непустое значение
