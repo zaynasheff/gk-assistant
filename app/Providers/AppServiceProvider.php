@@ -54,7 +54,8 @@ class AppServiceProvider extends ServiceProvider
 
 
          $this->app->singleton(Bitrix24API::class, function($app, $params ) {
-             $bx24 = new Bitrix24API('https://b24-82kpks.bitrix24.ru/rest/1/vhz2n4j86zw2d7a9/');
+             //$bx24 = new Bitrix24API('https://b24-82kpks.bitrix24.ru/rest/1/vhz2n4j86zw2d7a9/');
+             $bx24 = new Bitrix24API('https://b24-xrmwwq.bitrix24.ru/rest/1/exyd3sejmpof1k3w/');
              $bx24->http->throttle = 2; // не чаще раза в пол сек
 
              /*                // Устанавливаем каталог для сохранения лог файлов
