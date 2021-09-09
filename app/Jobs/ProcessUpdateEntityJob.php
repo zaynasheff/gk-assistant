@@ -5,6 +5,7 @@ namespace App\Jobs;
 use App\Bitrix24\Bitrix24API;
 use App\Bitrix24\Bitrix24APIException;
 use App\Exceptions\Validate2LevelException;
+use App\Helpers\B24ExceptionHelper;
 use App\Models\B24FieldsDictionary;
 use App\Models\ProcessHistory;
 use App\Services\Bitrix24ConcreteMethodFactory;
@@ -157,7 +158,8 @@ class ProcessUpdateEntityJob implements ShouldQueue
             Log::channel('ext_debug')->debug("increment lines_error:" . $process->lines_error);
 
         } catch (Bitrix24APIException $e) {
-            $error = 'Номер строки:' . $this->current_row_n . "| Номер столбца: -| ID сущности: " . $this->b24ID . "| Описание ошибки при обращении в Б24:" . $e->getMessage();
+            $error = 'Номер строки:' . $this->current_row_n . "| Номер столбца: -| ID сущности: " . $this->b24ID . "| Описание ошибки при обращении в Б24:"
+                . (new B24ExceptionHelper($this->entity_id))->interpeteErrorMsg($e);
             Storage::disk('log')->append('update.log', $error);
             $process->increment('lines_error');
             Log::channel('ext_debug')->debug("b24 exception:" . $error . ";файл:" . $e->getFile() . ";строка:" . $e->getLine() );
