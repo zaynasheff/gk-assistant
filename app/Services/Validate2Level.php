@@ -117,9 +117,21 @@ class Validate2Level
             }
             return true;
         }
-        return is_numeric($value);
+        return $value  // валидировать надо только непустое значение, пустое - очистка поля
+            ? is_numeric($value)
+            : true;
     }
+    private function validateMoney($value)
+    {
 
+        if (is_array($value)) {
+            foreach ($value as $val) {
+                if (!$this->validateMoney($val)) return false;
+            }
+            return true;
+        }
+        return preg_match("/^[\d.,]+/", $value);
+    }
     /**
      * @throws Validate2LevelException
      */
@@ -176,6 +188,12 @@ class Validate2Level
             case 'string' :
                 $this->data[$this->config->field_code] = $value;
                 break;
+            case 'money' :
+                if (!$this->validateMoney($value)) {
+                    $this->throwTypeError($index, $key, $this->config->field_type);
+                }
+                $this->data[$this->config->field_code] = $value;
+                break;
             case 'boolean' :
                 // if (!is_bool($value))
                 if ($value != "Нет" && $value != "Да" && $value) {
@@ -200,13 +218,15 @@ class Validate2Level
                     : $toDate($value) ;
                 break;
             case 'enumeration' :
-                if(!$validEnumValArr = $this->b24CustomField->getEnumIdsByValues($value) )  // //?? ["n0"];
-                {
-                    $this->throwCustomError($index,   sprintf('недопустимое значение поля "%s"' , $this->config->title) );
-                }
+                $validEnumValArr = $this->b24CustomField->getEnumIdsByValues($value);
+
                 if($this->b24CustomField->isMultiple() && count($value)!=count($validEnumValArr))
                 {
                     $this->throwCustomError($index,   sprintf('одно из значений поля "%s" является недопустимым' , $this->config->title) );
+                }
+                if(!empty($value) && !$validEnumValArr )  // //?? ["n0"];
+                {
+                    $this->throwCustomError($index,   sprintf('недопустимое значение поля "%s"' , $this->config->title) );
                 }
 
                 $this->data[$this->config->field_code] = $validEnumValArr;
@@ -248,5 +268,7 @@ class Validate2Level
 
         }
     }
+
+
 
 }

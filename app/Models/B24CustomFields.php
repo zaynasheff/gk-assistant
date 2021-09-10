@@ -89,7 +89,8 @@ class B24CustomFields
             $this->getItems()
         )->whereIn("VALUE", $values)
             ->pluck("ID")
-            ->toArray();
+            ->whenEmpty(function($collection){ return $collection->push("") ; }) // [""] для очистки поля
+            ->toArray() ;
 
     }
 
