@@ -88,6 +88,9 @@ class Validate2Level
                 Log::channel('ext_debug')->debug("empty value, NO validation :", [$value, $key]);
                 $this->data[$this->config->field_code] = $value;
 
+            } elseif($this->b24CustomField->isMultiple() && $value === [""])
+            {
+                $this->data[$this->config->field_code] = $value; // валидировать надо только непустое значение, пустое - очистка поля
             } else {
                 $this->__validate($value, $key, $index);
             }
@@ -117,13 +120,10 @@ class Validate2Level
             }
             return true;
         }
-        return $value  // валидировать надо только непустое значение, пустое - очистка поля
-            ? is_numeric($value)
-            : true;
+        return  is_numeric($value);
     }
     private function validateMoney($value)
     {
-
         if (is_array($value)) {
             foreach ($value as $val) {
                 if (!$this->validateMoney($val)) return false;
