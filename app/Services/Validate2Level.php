@@ -67,17 +67,16 @@ class Validate2Level
                 json_decode($this->config->items, true)
             );
 
-            if ($this->b24CustomField->isMultiple()) {
-                $value = array_map("trim", explode(",", $value));
-            } else {
-                $value = trim($value);
-
-            }
+            $value = trim($value);
 
             //пустое значение для поля, которое должно быть обязательным к заполнению;
             if (optional($this->config)->required && empty($value)
                 && !$this->isNotAnException($this->config)) {
                 $this->throwCustomError($index, $this->config->title . ' - обязательное поле');
+            }
+
+            if ($this->b24CustomField->isMultiple()) {
+                $value = array_map("trim", explode(",", $value));
             }
 
             unset($this->data[$key]); // убираем лишнее, в б24 отправятся только служебн. ключи типа UF_CRM_.... (это дейстиве в принципе не обязательно)
@@ -88,6 +87,13 @@ class Validate2Level
                 Log::channel('ext_debug')->debug("empty value, NO validation :", [$value, $key]);
                 $this->data[$this->config->field_code] = $value;
 
+            } elseif($this->b24CustomField->isMultiple() && $value === [""])
+            {
+                if( $this->b24CustomField->isOfDateType()) {
+                    // ДатаМножественное очищается пустой строкой
+                    $value = "";
+                }
+                $this->data[$this->config->field_code] = $value; // валидировать надо только непустое значение, пустое - очистка поля
             } else {
                 $this->__validate($value, $key, $index);
             }
@@ -117,9 +123,18 @@ class Validate2Level
             }
             return true;
         }
-        return is_numeric($value);
+        return  is_numeric($value);
     }
-
+    private function validateMoney($value)
+    {
+        if (is_array($value)) {
+            foreach ($value as $val) {
+                if (!$this->validateMoney($val)) return false;
+            }
+            return true;
+        }
+        return preg_match("/^[\d.,]+/", $value);
+    }
     /**
      * @throws Validate2LevelException
      */
@@ -176,6 +191,12 @@ class Validate2Level
             case 'string' :
                 $this->data[$this->config->field_code] = $value;
                 break;
+            case 'money' :
+                if (!$this->validateMoney($value)) {
+                    $this->throwTypeError($index, $key, $this->config->field_type);
+                }
+                $this->data[$this->config->field_code] = $value;
+                break;
             case 'boolean' :
                 // if (!is_bool($value))
                 if ($value != "Нет" && $value != "Да" && $value) {
@@ -185,28 +206,41 @@ class Validate2Level
                 break;
             case 'datetime' :
             case 'date' :
-                if (!$this->validateNumeric($value)) { // даты приходят числами из импорта
+
+                $toDate = function($val, $excel = false) use($field_type) {
+                    $cb = $excel
+                        ? \Carbon\Carbon::instance(\PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($val))
+                        : \Carbon\Carbon::parse($val);
+
+                    return $field_type == 'datetime'
+                        ? $cb->format("d.m.Y h:i:s")
+                        : $cb->format("d.m.Y");
+                };
+
+                if(!is_array($value) && is_numeric($value) )
+                {
+                    // если не мультипл и число, то это икселевская дата (  даты приходят числами из импорта)
+                    $this->data[$this->config->field_code] = $toDate($value, true);
+
+                } elseif(is_array($value))
+                { // если мультипл, то это строка, которую надо преобразовать в дату
+                    $this->data[$this->config->field_code] = array_map( $toDate, $value);
+                } else
+                {
                     $this->throwTypeError($index, $key, $this->config->field_type);
                 }
-                $toDate = function($val) use($field_type) {
-                            $cb = \Carbon\Carbon::instance(\PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($val));
-                            return $field_type == 'datetime'
-                                ? $cb->format("d.m.yy h:i:s")
-                                : $cb->format("d.m.yy");
-                     };
 
-                $this->data[$this->config->field_code] = $this->b24CustomField->isMultiple()
-                    ? array_map( $toDate, $value)
-                    : $toDate($value) ;
                 break;
             case 'enumeration' :
-                if(!$validEnumValArr = $this->b24CustomField->getEnumIdsByValues($value) )  // //?? ["n0"];
-                {
-                    $this->throwCustomError($index,   sprintf('недопустимое значение поля "%s"' , $this->config->title) );
-                }
+                $validEnumValArr = $this->b24CustomField->getEnumIdsByValues($value);
+
                 if($this->b24CustomField->isMultiple() && count($value)!=count($validEnumValArr))
                 {
                     $this->throwCustomError($index,   sprintf('одно из значений поля "%s" является недопустимым' , $this->config->title) );
+                }
+                if(!empty($value) && !$validEnumValArr )  // //?? ["n0"];
+                {
+                    $this->throwCustomError($index,   sprintf('недопустимое значение поля "%s"' , $this->config->title) );
                 }
 
                 $this->data[$this->config->field_code] = $validEnumValArr;
@@ -248,5 +282,7 @@ class Validate2Level
 
         }
     }
+
+
 
 }

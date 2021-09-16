@@ -92,6 +92,14 @@
                                     </div>
                                 </div>
                             </form>
+                                    <div class="row">
+                                        <div class="col-12" >
+                                            <div class="alert alert-info">
+                                                Внимание: поля типа Файл, Бронирование ресурсов, Адрес Google карты, а также поля, созданные с помощью REST API не изменяются данным приложением
+
+                                            </div>
+                                        </div>
+                                    </div>
                              <div class="row mt-5">
                                     <div class="col-12">
                                         <div class="card">
