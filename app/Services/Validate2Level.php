@@ -8,8 +8,10 @@ use App\Exceptions\Validate2LevelException;
 use App\Models\B24CustomFields;
 use App\Models\B24FieldsDictionary;
 use Carbon\Carbon;
+use Carbon\Exceptions\InvalidFormatException;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
+use PhpOffice\PhpSpreadsheet\Calculation\Functions;
 
 /**
  * Class Validate2Level
@@ -42,6 +44,8 @@ class Validate2Level
 
     public function __construct(array $data)
     {
+        Functions::setCompatibilityMode(Functions::COMPATIBILITY_GNUMERIC);
+
         $this->data = collect($data);
         $this->b24ID = (int)$data["ID"];
 
@@ -207,7 +211,7 @@ class Validate2Level
             case 'datetime' :
             case 'date' :
 
-                $toDate = function($val, $excel = false) use($field_type) {
+                $toDate = static function($val, $excel = false) use($field_type) {
                     $cb = $excel
                         ? \Carbon\Carbon::instance(\PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($val))
                         : \Carbon\Carbon::parse($val);
@@ -217,18 +221,26 @@ class Validate2Level
                         : $cb->format("d.m.Y");
                 };
 
-                if(!is_array($value) && is_numeric($value) )
-                {
-                    // если не мультипл и число, то это икселевская дата (  даты приходят числами из импорта)
-                    $this->data[$this->config->field_code] = $toDate($value, true);
+                try {
+                    if(!is_array($value) && is_numeric($value) )
+                    {
+                        // если не мультипл и число, то это икселевская дата (  даты приходят числами из импорта)
+                        $this->data[$this->config->field_code] = $toDate($value, true);
 
-                } elseif(is_array($value))
-                { // если мультипл, то это строка, которую надо преобразовать в дату
-                    $this->data[$this->config->field_code] = array_map( $toDate, $value);
-                } else
-                {
+                    } elseif(is_array($value))
+                    { // если мультипл, то это строка, которую надо преобразовать в дату
+                        $this->data[$this->config->field_code] = array_map( $toDate, $value);
+                    } else
+                    {
+                        $this->throwTypeError($index, $key, $this->config->field_type);
+                    }
+                } catch (InvalidFormatException $e) {
                     $this->throwTypeError($index, $key, $this->config->field_type);
+
                 }
+
+
+
 
                 break;
             case 'enumeration' :
