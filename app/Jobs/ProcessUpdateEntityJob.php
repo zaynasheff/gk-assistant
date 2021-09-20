@@ -94,6 +94,10 @@ class ProcessUpdateEntityJob implements ShouldQueue
 
         //$this->process = $process;
         //$this->b24 = $bitrix24API;
+        if(app()->runningUnitTests()) {
+            $this->doTheJob();
+            return;
+        }
 
         Redis::throttle('key')->block(0)->allow(60)->every(60)->then(function () {
             // info('Lock obtained...');

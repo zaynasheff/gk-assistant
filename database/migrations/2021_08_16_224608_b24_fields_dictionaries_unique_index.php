@@ -14,7 +14,7 @@ class B24FieldsDictionariesUniqueIndex extends Migration
     public function up()
     {
         Schema::table('b24_fields_dictionaries', function (Blueprint $table) {
-            $table->unique(['field_code', 'entity_id']);
+           #TODO $table->unique(['field_code', 'entity_id']);
         });
     }
 
