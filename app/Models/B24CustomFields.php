@@ -37,12 +37,16 @@ namespace App\Models;
  */
 class B24CustomFields
 {
+    const DateTypes = ['date', 'datetime'];
 
     /**
      * @var array
      */
     private $fields;
 
+    /*
+     *  поле items в таблице b24_fields_dictionaries
+     */
     public function __construct(array $fields)
     {
         $this->fields = $fields;
@@ -67,7 +71,7 @@ class B24CustomFields
 
 
     public function getItems() : array
-    {
+    { // items внутри items
         return (array)optional($this->fields)['items'];
     }
 
@@ -99,4 +103,19 @@ class B24CustomFields
         return (bool)optional($this->fields)["isMultiple"];
 
     }
+
+    public function getType()  : ?string
+    {
+        return optional($this->fields)["type"];
+
+    }
+
+    public function isOfDateType()  : bool
+    {
+        return in_array(
+            $this->getType(), self::DateTypes
+        );
+
+    }
+
 }

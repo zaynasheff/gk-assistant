@@ -17,21 +17,23 @@ use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
 use Tests\TestCase;
 
-class DataUploadTest extends TestCase
+class DealUploadTest extends TestCase
 {
 
-    /**
+
+   /**
      * A basic feature test example.
      * ПолеДеньги
      * @return void
      */
-    public function test_money_valid_99() : void
+    public function test_money_valid_99(): void
     {
+        ProcessHistory::truncate();
         Artisan::call('log:clear');
         //app()->detectEnvironment(function() { return 'testing'; });
         //dd(app()->environment(), \DB::connection()->getDatabaseName());
         app()->bind('request', function ($app) {
-            return new Request(['entity_id' => $this->b24_entity_id]);
+            return new Request(['entity_id' => Entity::DEAL_ENTITY_ID]);
         });
 
         $path = "/home/super/Downloads/МРП - Тестовые файлы/тест деньги.xlsx";
@@ -47,11 +49,18 @@ class DataUploadTest extends TestCase
         );
 
         $b24 = app()->make(Bitrix24API::class);
-        $b24MethodFactory = new Bitrix24ConcreteMethodFactory($this->b24_entity_id);
+        $b24MethodFactory = new Bitrix24ConcreteMethodFactory(Entity::DEAL_ENTITY_ID);
         $this->assertEquals(
-            "99|RUB",
-            $b24MethodFactory->GetOne($this->b24_id)["UF_CRM_1630915960694"]
+            "150|RUB",
+            $b24MethodFactory->GetOne(17199)["UF_CRM_1630915960694"]
         );
 
     }
+
+
+
+
+
+
+
 }

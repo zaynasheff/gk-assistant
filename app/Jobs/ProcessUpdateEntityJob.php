@@ -94,7 +94,7 @@ class ProcessUpdateEntityJob implements ShouldQueue
 
         //$this->process = $process;
         //$this->b24 = $bitrix24API;
-        if(app()->runningUnitTests()) {
+         if(app()->runningUnitTests()) {
             $this->doTheJob();
             return;
         }
