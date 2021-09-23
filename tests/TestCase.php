@@ -23,8 +23,8 @@ abstract class TestCase extends BaseTestCase
     use CreatesApplication; // MigrateFreshSeedOnce
 
     public const UF_CRM_STRING = "ПолеСтрока";
-    public const UF_CRM_STRING_MULTIPLE = "СтрокаМножств";
-    public const UF_CRM_INTEGER = "Число222";
+    public const UF_CRM_STRING_MULTIPLE = "СтрокаМнож";
+    public const UF_CRM_INTEGER = "Число";
     public const CONTROL_STRING = "test est srgg";
     public const CONTROL_INTEGER = 12;
     public const CONTROL_DOUBLE = 15.34;
@@ -60,9 +60,12 @@ abstract class TestCase extends BaseTestCase
     protected function bindRequest(): void
     {
         app()->bind('request', function ($app) {
-            return new Request(['entity_id' => $this->entityId]);
+            return new Request(['entity_id' => $this->entityId, 'b24ID' => $this->b24Id]);
         });
+
+
     }
+
     protected function assertProcessStarted(): void
     {
         $this->assertNotFalse(
@@ -142,7 +145,9 @@ abstract class TestCase extends BaseTestCase
 
     protected function getUFKey(string $UF_HUMAN_NAME)
     {
-        return B24FieldsDictionary::where('title', $UF_HUMAN_NAME)
+        return B24FieldsDictionary::
+            where('entity_id', $this->entityId)
+            ->where('title', $UF_HUMAN_NAME)
             ->first()
             ->field_code;
     }

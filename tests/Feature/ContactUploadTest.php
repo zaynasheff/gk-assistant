@@ -25,14 +25,14 @@ class ContactUploadTest extends TestCase
 
     public function test_contact_string_valid(): void
     {
+
         $this->value_is_valid(
-            "контакт тест строка валидная.xlsx",
+            "тест строка валидная.xlsx",
             self::CONTROL_STRING,
              self::UF_CRM_STRING
         );
 
     }
-
     public function test_contact_string_multiple_valid(): void
     {
         $this->value_is_valid(
@@ -49,7 +49,6 @@ class ContactUploadTest extends TestCase
             self::UF_CRM_STRING_MULTIPLE );
 
     }
-
     public function test_contact_string_multiple_cleared(): void
     {
         $this->value_is_valid(
@@ -58,7 +57,6 @@ class ContactUploadTest extends TestCase
             self::UF_CRM_STRING_MULTIPLE );
 
     }
-
     public function test_contact_string_cleared_when_empty(): void
     {
         $this->string_is_cleared_when_empty(
@@ -67,13 +65,11 @@ class ContactUploadTest extends TestCase
         );
 
     }
-
     public function test_contact_error_when_requred_is_empty(): void
     {
         $this->error_when_requred_is_empty("контакт ошибка при пустом оьязат. поле.xlsx");
 
     }
-
     public function test_contact_integer_valid(): void
     {
         $this->value_is_valid(

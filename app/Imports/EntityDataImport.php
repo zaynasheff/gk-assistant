@@ -57,9 +57,13 @@ class EntityDataImport implements ToCollection, WithHeadingRow, SkipsEmptyRows, 
 
         //Отправка в очередь
         $time_start = now();
+
         foreach ($entityData as $index => $line) {
             $lineNum = (int)$index + 1; //номер строки
-            ProcessUpdateEntityJob::dispatch($lineNum, request()->entity_id, $line, $process)->onQueue('EntityDataImport')->delay($time_start->addMicroseconds(1000000));
+            if ( ($b24ID = request()->b24ID ) && app()->runningUnitTests() ) {
+                $line["ID"] = $b24ID; // для тестов - задать ID через request
+            }
+                ProcessUpdateEntityJob::dispatch($lineNum, request()->entity_id, $line, $process)->onQueue('EntityDataImport')->delay($time_start->addMicroseconds(1000000));
         }
     }
 
