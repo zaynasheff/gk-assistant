@@ -35,7 +35,8 @@ class TestUpload extends TestCase
     public const UF_CRM_DATE_REQUIRED = "ДатаОбязат";
     public const CONTROL_DATE = "01.01.2021";
     public const CONTROL_DATETIME = "2020-12-04 02:20:00";
-
+    //TODO
+    public const CONTROL_CONTACT_ENUM_MULTIPLE = [69,73];
 
     //public const USER_FIELDS_CONTACT_STRING = 'UF_CRM_1632337224644';
     // public const USER_FIELDS_CONTACT_STRING = 'UF_CRM_1632337224644';
@@ -175,7 +176,7 @@ class TestUpload extends TestCase
 
 
     }
-    protected function error_when_required_is_empty($filename, $error_text="обязательное поле"): void
+    protected function error_log_contains_errormsg($filename, $error_text="обязательное поле"): void
     {
         Artisan::call('log:clear');
         $this->bindRequest();
@@ -188,6 +189,12 @@ class TestUpload extends TestCase
 
     protected function getUFKey(string $UF_HUMAN_NAME)
     {
+
+/*        dd($UF_HUMAN_NAME, $this->entityId,
+            B24FieldsDictionary::
+            where('entity_id', $this->entityId)
+                ->where('title', $UF_HUMAN_NAME)->get()
+        );*/
         return B24FieldsDictionary::
         where('entity_id', $this->entityId)
             ->where('title', $UF_HUMAN_NAME)

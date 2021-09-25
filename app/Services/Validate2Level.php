@@ -58,6 +58,7 @@ class Validate2Level
      */
     public function validateData(array $b24Entity, Collection $fields_config): Collection
     {
+
         $this->b24Entity = $b24Entity;
         Log::channel('ext_debug')->debug("start validating. ");
 
@@ -250,7 +251,8 @@ class Validate2Level
                 {
                     $this->throwCustomError($index,   sprintf('одно из значений поля "%s" является недопустимым' , $this->config->title) );
                 }
-                if(!empty($value) && !$validEnumValArr )  // //?? ["n0"];
+
+                if(!empty($value) && (!$validEnumValArr || $validEnumValArr===[""])  )  // //?? ["n0"];
                 {
                     $this->throwCustomError($index,   sprintf('недопустимое значение поля "%s"' , $this->config->title) );
                 }
