@@ -17,15 +17,15 @@ use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
 use Tests\TestCase;
 
-class CompanyUploadTest extends ContactUploadTest
+class LeadsUploadTest extends ContactUploadTest
 {
 
 
-    public const CONTROL_ENUM = 95;
-    public const CONTROL_ENUM_MULTIPLE = ["101","105"];
+    public const CONTROL_ENUM = 107;
+    public const CONTROL_ENUM_MULTIPLE = ["113","117"];
 
-    protected $b24Id = 11;
-    protected $entityId = Entity::COMPANY_ENTITY_ID;
+    protected $b24Id = 1;
+    protected $entityId = Entity::LEAD_ENTITY_ID;
 
 
 }

@@ -20,7 +20,25 @@ use Tests\TestCase;
 class ContactUploadTest extends TestUpload
 {
 
-
+    public const UF_CRM_STRING = "ПолеСтрока";
+    public const UF_CRM_STRING_MULTIPLE = "СтрокаМнож";
+    public const UF_CRM_INTEGER = "Число";
+    public const CONTROL_STRING = "test est srgg";
+    public const CONTROL_INTEGER = 12;
+    public const UF_CRM_INTEGER_MULTIPLE = "ЧислоМнож";
+    public const CONTROL_INTEGER_MULTIPLE = [567, 11.23, 51];
+    public const CONTROL_INTEGER_MULTIPLE2 = [32];
+    public const CONTROL_DOUBLE = 15.34;
+    public const CONTROL_STRING_MULTIPLE = ["qqqqqqqqqqqq"];
+    public const CONTROL_STRING_MULTIPLE2 = ["vdfb 546", "выапап 54"];
+    public const UF_CRM_DATE = "Дата";
+    public const UF_CRM_DATETIME = "ДатаВремя2";
+    public const UF_CRM_DATE_MULTIPLE = "ДатаМнож";
+    public const UF_CRM_DATETIME_MULTIPLE = "ДатаВремяМнож";
+    public const UF_CRM_DATE_REQUIRED = "ДатаОбязат";
+    public const CONTROL_DATE = "01.01.2021";
+    public const CONTROL_DATETIME = "2020-12-04 02:20:00";
+    public const CONTROL_ENUM_MULTIPLE = [69,73];
     public const CONTROL_ENUM = 61;
 
     protected $b24Id = 1261;
@@ -308,7 +326,7 @@ class ContactUploadTest extends TestUpload
     {
         $this->value_is_valid(
             "тест список множ валид.xlsx",
-            self::CONTROL_CONTACT_ENUM_MULTIPLE,
+            static::CONTROL_ENUM_MULTIPLE,
             "СписокМнож");
 
     }

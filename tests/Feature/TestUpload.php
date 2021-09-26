@@ -17,26 +17,7 @@ use Tests\TestCase;
 
 class TestUpload extends TestCase
 {
-    public const UF_CRM_STRING = "ПолеСтрока";
-    public const UF_CRM_STRING_MULTIPLE = "СтрокаМнож";
-    public const UF_CRM_INTEGER = "Число";
-    public const CONTROL_STRING = "test est srgg";
-    public const CONTROL_INTEGER = 12;
-    public const UF_CRM_INTEGER_MULTIPLE = "ЧислоМнож";
-    public const CONTROL_INTEGER_MULTIPLE = [567, 11.23, 51];
-    public const CONTROL_INTEGER_MULTIPLE2 = [32];
-    public const CONTROL_DOUBLE = 15.34;
-    public const CONTROL_STRING_MULTIPLE = ["qqqqqqqqqqqq"];
-    public const CONTROL_STRING_MULTIPLE2 = ["vdfb 546", "выапап 54"];
-    public const UF_CRM_DATE = "Дата";
-    public const UF_CRM_DATETIME = "ДатаВремя2";
-    public const UF_CRM_DATE_MULTIPLE = "ДатаМнож";
-    public const UF_CRM_DATETIME_MULTIPLE = "ДатаВремяМнож";
-    public const UF_CRM_DATE_REQUIRED = "ДатаОбязат";
-    public const CONTROL_DATE = "01.01.2021";
-    public const CONTROL_DATETIME = "2020-12-04 02:20:00";
-    //TODO
-    public const CONTROL_CONTACT_ENUM_MULTIPLE = [69,73];
+
 
     //public const USER_FIELDS_CONTACT_STRING = 'UF_CRM_1632337224644';
     // public const USER_FIELDS_CONTACT_STRING = 'UF_CRM_1632337224644';
