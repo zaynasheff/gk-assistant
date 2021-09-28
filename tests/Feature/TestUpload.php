@@ -27,7 +27,7 @@ class TestUpload extends TestCase
 
 
     protected  $entityId, $b24Id;
-    protected const FILES_ROOT = "/home/super/Downloads/МРП - Тестовые файлы/";
+    protected const FILES_ROOT = "storage/МРП - Тестовые файлы/";
 
     protected function setUp(): void
     {
