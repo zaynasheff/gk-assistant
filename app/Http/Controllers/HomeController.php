@@ -219,7 +219,11 @@ class HomeController extends Controller
         try {
 
             //чистим очередь
-            Artisan::call('queue:clear --queue=EntityDataImport');
+            Artisan::call('queue:clear',[
+                '--force' => true,
+                '--queue' => 'EntityDataImport'
+            ]);
+
             $process = ProcessHistory::where('processing', 1)->first();
             $process->processing = 2;//процесс завершен
             $process->save();
