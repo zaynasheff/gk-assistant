@@ -25,6 +25,8 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         $schedule->command('dicts:update')->everyFiveMinutes();  //->hourly();
+        $schedule->command('horizon:snapshot')->everyFiveMinutes();
+
     }
 
     /**
