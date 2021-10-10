@@ -49,13 +49,9 @@ class EntityDataImport implements ToCollection, WithHeadingRow, SkipsEmptyRows, 
         $entityData = $collection->toArray();
 
         //рестарт очередей , важно т.к. AppServiceProvider boot работает только в этом случае
-        Artisan::call('queue:restart', [
-            '--force' => true
-        ]);
+        Artisan::call('queue:restart');
         //чистим лог
-        Artisan::call('log:clear', [
-            '--force' => true
-        ]);
+        Artisan::call('log:clear');
         //создаем новый лог
         Log::channel('log')->info('Новый процесс запущен. UID: ' . $process->uid);
 

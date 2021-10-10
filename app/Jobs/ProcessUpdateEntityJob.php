@@ -48,13 +48,20 @@ class ProcessUpdateEntityJob implements ShouldQueue
      *
      * @var int
      */
-    public $maxExceptions = 1;
+    public $maxExceptions = 3;
     /**
      * The number of times the job may be attempted.
      *
      * @var int
      */
-    public $tries = 1;
+    public $tries = 3;
+    /**
+     * The number of seconds the job can run before timing out.
+     *
+     * @var int
+     */
+    public $timeout = 600;
+
     private $data;
     private $entity_id;
 
