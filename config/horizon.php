@@ -190,6 +190,8 @@ return [
                 'backoff' => 30,
                 'maxTime' => 3600,
                 'maxJobs' => 180, // per min
+                'timeout' => 900,
+
 
             ],
         ],
